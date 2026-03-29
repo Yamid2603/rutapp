@@ -1,0 +1,64 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5a5a5a;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.input {
+  padding: 9px 12px;
+  background: #F0F0D8;
+  border: 1px solid #D8D8C0;
+  border-radius: 8px;
+  color: #1a1a1a;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.input:focus { border-color: #1693A5; }
+.input::placeholder { color: #5a5a5a; }
+
+select.input {
+  appearance: none;
+  cursor: pointer;
+}
+
+.btn {
+  padding: 9px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+
+.primary {
+  background: #1693A5;
+  color: #000;
+  border-color: #1693A5;
+}
+.primary:hover { background: #0f7a8a; }
+
+.secondary {
+  background: transparent;
+  color: #5a5a5a;
+  border-color: #D8D8C0;
+}
+.secondary:hover { border-color: #1693A5; color: #1a1a1a; }
+
+.danger {
+  background: transparent;
+  color: #EF4444;
+  border-color: #EF4444;
+}
+.danger:hover { background: rgba(239,68,68,0.1); }

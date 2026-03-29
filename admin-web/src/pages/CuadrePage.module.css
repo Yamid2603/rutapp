@@ -1,0 +1,209 @@
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pageTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.dateInput {
+  padding: 6px 12px;
+  background: #F0F0D8;
+  border: 1px solid #D8D8C0;
+  border-radius: 8px;
+  color: #1a1a1a;
+  font-size: 13px;
+  outline: none;
+  color-scheme: dark;
+}
+.dateInput:focus { border-color: #1693A5; }
+
+.empty {
+  text-align: center;
+  color: #5a5a5a;
+  padding: 48px;
+  background: #FFFFFF;
+  border: 1px solid #D8D8C0;
+  border-radius: 12px;
+}
+
+.camionCard {
+  background: #FFFFFF;
+  border: 1px solid #D8D8C0;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.camionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid #D8D8C0;
+  background: #F0F0D8;
+}
+
+.camionName {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.camionConductor {
+  font-size: 13px;
+  color: #5a5a5a;
+}
+
+.section {
+  padding: 14px 20px;
+  border-bottom: 1px solid #D8D8C0;
+}
+
+.sectionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5a5a5a;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin: 0 0 10px;
+}
+
+.miniTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.miniTable th {
+  text-align: left;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #5a5a5a;
+  text-transform: uppercase;
+  border-bottom: 1px solid #D8D8C0;
+}
+
+.miniTable td {
+  padding: 5px 8px;
+  color: #1a1a1a;
+}
+
+.green { color: #22C55E; }
+.amber { color: #1693A5; }
+.red { color: #EF4444; }
+
+.cobroGrid, .summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.cobroGrid > div, .summaryGrid > div, .totalGrid > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+}
+
+.cobroLabel {
+  font-size: 12px;
+  color: #5a5a5a;
+}
+
+.gastoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 13px;
+  color: #1a1a1a;
+  border-bottom: 1px solid #D8D8C0;
+}
+
+.noData {
+  color: #5a5a5a;
+  font-size: 12px;
+  margin: 0;
+}
+
+.bigNumber {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1693A5;
+}
+
+.netoBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #F0F0D8;
+}
+
+.totalCard {
+  background: #FFFFFF;
+  border: 2px solid #1693A5;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 8px;
+}
+
+.totalTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1693A5;
+  margin: 0 0 14px;
+}
+
+.totalGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.netoTotal {
+  padding-top: 10px;
+  margin-top: 6px;
+  border-top: 1px solid #D8D8C0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.exportBtns {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.stubBtn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px dashed #D8D8C0;
+  background: transparent;
+  color: #5a5a5a;
+  font-size: 12px;
+  cursor: not-allowed;
+}

@@ -1,0 +1,106 @@
+.pageTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 20px;
+}
+
+.card {
+  background: #FFFFFF;
+  border: 1px solid #D8D8C0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.cardTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 14px;
+}
+
+.gridWrap { overflow-x: auto; }
+
+.calTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.calTable th {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5a5a5a;
+  text-transform: uppercase;
+  border-bottom: 1px solid #D8D8C0;
+  text-align: center;
+}
+
+.calTable td {
+  padding: 10px 12px;
+  color: #1a1a1a;
+  border-bottom: 1px solid #D8D8C0;
+  text-align: center;
+}
+
+.camName {
+  font-weight: 600;
+  text-align: left !important;
+  white-space: nowrap;
+}
+
+.cell {
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 6px;
+}
+.cell:hover { background: #F0F0D8; }
+
+.todayCol { background: rgba(245,158,11,0.06); }
+
+.empty {
+  text-align: center;
+  color: #5a5a5a;
+  padding: 24px !important;
+}
+
+.noData {
+  color: #5a5a5a;
+  font-size: 13px;
+  margin: 0;
+}
+
+.cargaBlock {
+  padding: 12px 0;
+  border-bottom: 1px solid #D8D8C0;
+}
+.cargaBlock:last-child { border-bottom: none; }
+
+.cargaTitle {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.cargaGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cargaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: #F0F0D8;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.cargaProd { color: #5a5a5a; }
+.cargaQty { color: #1693A5; font-weight: 700; }

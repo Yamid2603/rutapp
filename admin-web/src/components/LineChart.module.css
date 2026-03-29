@@ -1,0 +1,17 @@
+.wrap { width: 100%; }
+
+.svg {
+  width: 100%;
+  height: calc(100% - 24px);
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0 0;
+}
+
+.label {
+  font-size: 10px;
+  color: #8B949E;
+}

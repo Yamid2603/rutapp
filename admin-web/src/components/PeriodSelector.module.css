@@ -1,0 +1,24 @@
+.pills {
+  display: flex;
+  gap: 6px;
+}
+
+.pill {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid #D8D8C0;
+  background: transparent;
+  color: #5a5a5a;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pill:hover { border-color: #1693A5; color: #1a1a1a; }
+
+.active {
+  background: rgba(245,158,11,0.15);
+  border-color: #1693A5;
+  color: #1693A5;
+}

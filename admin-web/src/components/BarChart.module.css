@@ -1,0 +1,43 @@
+.chart {
+  width: 100%;
+  padding: 8px 0;
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 100%;
+}
+
+.col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.barWrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.bar {
+  width: 70%;
+  max-width: 40px;
+  min-height: 4px;
+  background: #F59E0B;
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s;
+}
+
+.label {
+  font-size: 11px;
+  color: #8B949E;
+  margin-top: 6px;
+  text-transform: capitalize;
+}
