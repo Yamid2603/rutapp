@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Cada usuario puede leer su propio documento de perfil
+    match /users/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      // La escritura de usuarios se hace solo desde el Admin SDK (backend)
+      allow write: if false;
+    }
+
+    // Por defecto, denegar todo lo demás
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
