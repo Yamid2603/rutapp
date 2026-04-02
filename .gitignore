@@ -1,7 +1,9 @@
+conductor-app/.env
+admin-web/.env
 node_modules/
+conductor-app/node_modules/
+admin-web/node_modules/
 dist/
-.env.local
-.DS_Store
-*.log
-.vite/
+build/
 .expo/
+conductor-app/.expo/
