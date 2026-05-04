@@ -9,6 +9,9 @@ import ProductosPage from './pages/ProductosPage';
 import CuadrePage from './pages/CuadrePage';
 import ZonasPage from './pages/ZonasPage';
 import GestionPage from './pages/GestionPage';
+import AnalisisPage from './pages/AnalisisPage';
+import PerfilAdminPage from './pages/PerfilAdminPage';
+import OnboardingPage from './pages/OnboardingPage';
 
 function RootRedirect() {
   const { user, role, loading } = useAuth();
@@ -27,6 +30,8 @@ function AdminRoutes() {
         <Route path="cuadre" element={<CuadrePage />} />
         <Route path="zonas" element={<ZonasPage />} />
         <Route path="gestion" element={<GestionPage />} />
+        <Route path="analisis" element={<AnalisisPage />} />
+        <Route path="perfil" element={<PerfilAdminPage />} />
       </Routes>
     </Layout>
   );
@@ -39,6 +44,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/onboarding" element={<OnboardingPage />} />
           <Route
             path="/admin/*"
             element={

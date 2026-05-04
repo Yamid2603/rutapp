@@ -1,28 +1,41 @@
+/* ── Zonas & Carga Page ─────────────────────────────────────── */
+
 .pageTitle {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 800;
   color: #1a1a1a;
-  margin: 0 0 20px;
+  margin: 0 0 24px;
+  letter-spacing: -0.5px;
 }
 
 .card {
   background: #FFFFFF;
-  border: 1px solid #D8D8C0;
-  border-radius: 12px;
-  padding: 20px;
+  border: 1px solid rgba(13,36,51,0.06);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+  margin-bottom: 20px;
 }
 
 .cardTitle {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
   color: #1a1a1a;
-  margin: 0 0 14px;
+  margin: 0 0 4px;
+  letter-spacing: 0.2px;
+}
+
+.hint {
+  font-size: 12px;
+  color: #8B949E;
+  margin: 0 0 16px;
 }
 
 .gridWrap { overflow-x: auto; }
 
+/* ── Calendar grid ──────────────────────────────────────────── */
 .calTable {
   width: 100%;
   border-collapse: collapse;
@@ -30,52 +43,80 @@
 }
 
 .calTable th {
-  padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #5a5a5a;
+  padding: 10px 12px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #8B949E;
   text-transform: uppercase;
-  border-bottom: 1px solid #D8D8C0;
+  letter-spacing: 0.7px;
+  border-bottom: 1px solid #EFEFDF;
   text-align: center;
 }
 
 .calTable td {
-  padding: 10px 12px;
+  padding: 8px;
   color: #1a1a1a;
-  border-bottom: 1px solid #D8D8C0;
+  border-bottom: 1px solid #EFEFDF;
   text-align: center;
+  vertical-align: middle;
 }
 
 .camName {
   font-weight: 600;
   text-align: left !important;
   white-space: nowrap;
+  padding-left: 4px !important;
 }
 
 .cell {
   cursor: pointer;
-  transition: background 0.15s;
-  border-radius: 6px;
+  transition: background 0.15s, box-shadow 0.15s;
+  border-radius: 8px;
+  min-width: 90px;
 }
-.cell:hover { background: #F0F0D8; }
+.cell:hover {
+  background: rgba(22,147,165,0.06);
+  box-shadow: inset 0 0 0 1px rgba(22,147,165,0.25);
+}
+.cellActive { background: rgba(22,147,165,0.08); }
 
-.todayCol { background: rgba(245,158,11,0.06); }
+.todayCol { background: rgba(22,147,165,0.04); }
+
+.cellBadge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1693A5;
+}
+
+.cellEmpty {
+  display: inline-block;
+  font-size: 18px;
+  color: #D8D8C0;
+}
+
+.cellZona {
+  font-size: 10px;
+  color: #8B949E;
+  margin-top: 2px;
+}
 
 .empty {
   text-align: center;
-  color: #5a5a5a;
-  padding: 24px !important;
+  color: #8B949E;
+  padding: 28px !important;
 }
 
 .noData {
-  color: #5a5a5a;
+  color: #8B949E;
   font-size: 13px;
   margin: 0;
 }
 
+/* ── Carga (loading) ────────────────────────────────────────── */
 .cargaBlock {
-  padding: 12px 0;
-  border-bottom: 1px solid #D8D8C0;
+  padding: 14px 0;
+  border-bottom: 1px solid #EFEFDF;
 }
 .cargaBlock:last-child { border-bottom: none; }
 
@@ -83,7 +124,7 @@
   font-weight: 600;
   font-size: 14px;
   color: #1a1a1a;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .cargaGrid {
@@ -93,14 +134,157 @@
 }
 
 .cargaItem {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 12px;
-  background: #F0F0D8;
-  border-radius: 6px;
+  padding: 5px 12px;
+  background: #F7F7EE;
+  border: 1px solid #E8E8D0;
+  border-radius: 20px;
   font-size: 12px;
 }
 
 .cargaProd { color: #5a5a5a; }
 .cargaQty { color: #1693A5; font-weight: 700; }
+
+/* ── Modal contents ─────────────────────────────────────────── */
+.warningBanner {
+  background: rgba(192,123,42,0.08);
+  border: 1px solid rgba(192,123,42,0.25);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #7A4F1A;
+  margin-bottom: 16px;
+}
+
+.modalGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 700px) {
+  .modalGrid { grid-template-columns: 1fr; }
+}
+
+.modalCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.colLabel {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: #8B949E;
+  margin-bottom: 10px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 9px 13px;
+  border: 1px solid #D8D8C0;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 10px;
+  background: #FAFAF5;
+  box-sizing: border-box;
+  color: #1a1a1a;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: inherit;
+}
+.searchInput:focus {
+  border-color: #1693A5;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(22,147,165,0.10);
+}
+.searchInput::placeholder { color: #B0B8C1; }
+
+.clienteList {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #E8E8D0;
+  border-radius: 10px;
+  padding: 4px 0;
+  background: #FAFAF5;
+}
+
+.clienteRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 13px;
+  cursor: pointer;
+  transition: background 0.12s;
+  border-bottom: 1px solid #EFEFDF;
+}
+.clienteRow:last-child { border-bottom: none; }
+.clienteRow:hover { background: rgba(22,147,165,0.05); }
+
+.clienteVisitado { opacity: 0.55; cursor: not-allowed; }
+
+.clienteNombre {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  flex: 1;
+}
+
+.clienteDir {
+  font-size: 11px;
+  color: #8B949E;
+}
+
+.visitadoBadge {
+  font-size: 10px;
+  background: rgba(46,125,107,0.10);
+  color: #2E7D6B;
+  border-radius: 20px;
+  padding: 2px 8px;
+  font-weight: 600;
+}
+
+.selCount {
+  font-size: 12px;
+  color: #8B949E;
+  margin-top: 8px;
+  text-align: right;
+}
+
+.invRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #EFEFDF;
+}
+.invRow:last-of-type { border-bottom: none; }
+
+.invNombre {
+  flex: 1;
+  font-size: 13px;
+  color: #1a1a1a;
+}
+
+.invInput {
+  width: 76px;
+  padding: 7px 10px;
+  border: 1px solid #D8D8C0;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: right;
+  background: #FAFAF5;
+  color: #1a1a1a;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: inherit;
+}
+.invInput:focus {
+  border-color: #1693A5;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(22,147,165,0.10);
+}

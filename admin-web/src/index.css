@@ -1,4 +1,56 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+  /* Palette — stays close to original */
+  --cream:        #F0F0D8;
+  --cream-light:  #F7F7EC;
+  --cream-border: #D8D8C0;
+  --teal:         #1693A5;
+  --teal-dark:    #0F7A8A;
+  --teal-dim:     rgba(22,147,165,0.10);
+  --navy:         #0D2433;
+  --navy-mid:     #1A3447;
+  --navy-subtle:  rgba(13,36,51,0.06);
+
+  /* Text */
+  --text-primary:   #1a1a1a;
+  --text-secondary: #5a5a5a;
+  --text-muted:     #8B949E;
+  --text-on-navy:   #E8EDF2;
+  --text-on-teal:   #ffffff;
+
+  /* Semantic */
+  --success:     #2E7D6B;
+  --success-bg:  rgba(46,125,107,0.10);
+  --danger:      #B84B4B;
+  --danger-bg:   rgba(184,75,75,0.10);
+  --warning:     #C07B2A;
+  --warning-bg:  rgba(192,123,42,0.10);
+
+  /* Surface */
+  --surface:        #FFFFFF;
+  --surface-raised: #FFFFFF;
+  --bg-page:        #F0F0D8;
+
+  /* Elevation */
+  --shadow-sm:  0 1px 4px rgba(13,36,51,0.06);
+  --shadow-md:  0 2px 12px rgba(13,36,51,0.08);
+  --shadow-lg:  0 8px 32px rgba(13,36,51,0.12);
+
+  /* Radius */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  18px;
+
+  /* Spacing */
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 14px;
+  --gap-lg: 24px;
+  --gap-xl: 32px;
+}
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -7,8 +59,11 @@
 }
 
 body {
-  font-family: 'DM Sans', sans-serif;
-  background: #F0F0D8;
-  color: #1a1a1a;
+  font-family: 'Inter', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 14px;
+  line-height: 1.5;
 }

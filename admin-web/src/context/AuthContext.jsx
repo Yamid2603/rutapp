@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 
@@ -67,6 +67,29 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function signInWithGoogle() {
+    setError(null);
+    const provider = new GoogleAuthProvider();
+    try {
+      const credential = await signInWithPopup(auth, provider);
+      const userDoc = await getDoc(doc(db, 'usuarios', credential.user.uid));
+      if (!userDoc.exists()) {
+        await firebaseSignOut(auth);
+        throw new Error('Tu cuenta Google no está registrada en RutaApp. Regístrala desde el onboarding.');
+      }
+      const data = userDoc.data();
+      if (data.rol !== 'admin') {
+        await firebaseSignOut(auth);
+        throw new Error('Acceso solo para administradores.');
+      }
+      return { user: credential.user, role: data.rol };
+    } catch (err) {
+      const message = err.message || 'Error al iniciar sesión con Google.';
+      setError(message);
+      throw err;
+    }
+  }
+
   async function signOut() {
     await firebaseSignOut(auth);
     clearUser();
@@ -74,7 +97,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, role, empresaId, nombre, loading, error, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, role, empresaId, nombre, loading, error, signIn, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   );

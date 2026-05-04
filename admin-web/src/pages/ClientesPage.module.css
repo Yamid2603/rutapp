@@ -1,45 +1,58 @@
+/* ── Clientes Page ──────────────────────────────────────────── */
+
 .topBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
   flex-wrap: wrap;
   gap: 12px;
 }
 
 .pageTitle {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 800;
   color: #1a1a1a;
   margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1;
 }
 
 .actions {
   display: flex;
-  gap: 8px;
   align-items: center;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
+/* Search input */
 .search {
-  padding: 8px 14px;
-  background: #F0F0D8;
-  border: 1px solid #D8D8C0;
-  border-radius: 8px;
-  color: #1a1a1a;
-  font-size: 13px;
-  outline: none;
-  width: 200px;
-}
-.search:focus { border-color: #1693A5; }
-.search::placeholder { color: #5a5a5a; }
-
-.card {
+  padding: 9px 14px;
   background: #FFFFFF;
   border: 1px solid #D8D8C0;
-  border-radius: 12px;
-  overflow-x: auto;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #1a1a1a;
+  outline: none;
+  width: 200px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: inherit;
+}
+.search:focus {
+  border-color: #1693A5;
+  box-shadow: 0 0 0 3px rgba(22,147,165,0.10);
+}
+.search::placeholder { color: #B0B8C1; }
+
+/* Table card */
+.card {
+  background: #FFFFFF;
+  border: 1px solid rgba(13,36,51,0.06);
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+  overflow: hidden;
 }
 
 .table {
@@ -50,55 +63,56 @@
 
 .table th {
   text-align: left;
-  padding: 10px 14px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #5a5a5a;
+  padding: 12px 16px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #8B949E;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  border-bottom: 1px solid #D8D8C0;
+  letter-spacing: 0.7px;
+  border-bottom: 1px solid #EFEFDF;
+  background: #FAFAF5;
 }
 
 .table td {
-  padding: 10px 14px;
+  padding: 12px 16px;
   color: #1a1a1a;
-  border-bottom: 1px solid #D8D8C0;
+  border-bottom: 1px solid #EFEFDF;
 }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: #FAFAF5; }
 
-.bold { font-weight: 600; }
-.green { color: #22C55E; }
-.red { color: #EF4444; }
-.muted { color: #5a5a5a; }
-
-.listaBadge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 700;
-  background: rgba(22, 147, 165, 0.12);
-  color: #1693A5;
-}
+.bold   { font-weight: 600; }
+.muted  { color: #8B949E; }
+.red    { color: #B84B4B; font-weight: 600; }
+.green  { color: #2E7D6B; font-weight: 600; }
+.empty  { text-align: center; color: #8B949E; padding: 36px !important; }
 
 .editBtn {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 16px;
-  padding: 4px 8px;
+  font-size: 15px;
+  padding: 5px 7px;
   border-radius: 6px;
-  transition: background 0.15s;
+  opacity: 0.65;
+  transition: background 0.15s, opacity 0.15s;
 }
-.editBtn:hover { background: #F0F0D8; }
+.editBtn:hover { background: #F0F0D8; opacity: 1; }
 
-.empty {
-  text-align: center;
-  color: #5a5a5a;
-  padding: 24px !important;
-}
-
+/* Price grid inside modal */
 .priceGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 10px;
+}
+
+/* Legacy — keep for JSX compatibility */
+.listaBadge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(22,147,165,0.10);
+  color: #1693A5;
 }

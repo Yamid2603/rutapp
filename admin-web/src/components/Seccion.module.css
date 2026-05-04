@@ -1,0 +1,135 @@
+/* ── Sección ────────────────────────────────────────────────── */
+
+.seccion {
+  border: 1px solid #E8E8D0;
+  border-radius: 14px;
+  padding: 20px;
+  background: #FFFFFF;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(13,36,51,0.05);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.header h3 {
+  margin: 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.2px;
+}
+
+.btnExportar {
+  padding: 6px 14px;
+  border: 1px solid #E8E8D0;
+  background: #FAFAF5;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #5a5a5a;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.btnExportar:hover {
+  background: #F0F0D8;
+  border-color: #1693A5;
+  color: #1693A5;
+}
+
+.tabla {
+  overflow-x: auto;
+}
+
+.tabla table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.tabla thead {
+  background: #FAFAF5;
+  border-bottom: 1px solid #EFEFDF;
+}
+
+.tabla th {
+  padding: 11px 12px;
+  text-align: left;
+  font-weight: 700;
+  color: #8B949E;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  letter-spacing: 0.7px;
+}
+
+.tabla td {
+  padding: 12px;
+  border-bottom: 1px solid #EFEFDF;
+  color: #1a1a1a;
+}
+
+.tabla tbody tr {
+  transition: background 0.15s;
+}
+
+.tabla tbody tr:hover {
+  background: #FAFAF5;
+}
+
+.tabla tbody tr:last-child td { border-bottom: none; }
+
+.nombre {
+  font-weight: 600;
+}
+
+/* Muted semantic row indicators */
+.row_green  { border-left: 3px solid #2E7D6B; }
+.row_yellow { border-left: 3px solid #C07B2A; }
+.row_red    { border-left: 3px solid #B84B4B; }
+
+.badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status {
+  font-size: 16px;
+}
+
+.empty {
+  text-align: center;
+  color: #8B949E;
+  padding: 24px !important;
+}
+
+.barras {
+  padding: 0 4px;
+}
+
+.alertasLista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.alerta {
+  padding: 14px 16px;
+  border-radius: 10px;
+  border-left: 4px solid;
+  background: #FAFAF5;
+  transition: all 0.2s;
+}
+
+.alerta:hover {
+  box-shadow: 0 2px 8px rgba(13,36,51,0.08);
+  background: #FFFFFF;
+}

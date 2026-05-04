@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useRutas, useProductos, useCamiones, useUsuarios } from '../hooks/useCollection';
+import { useRutas, useProductos, useCamiones, useUsuarios, useClientes } from '../hooks/useCollection';
 import { today, getWeekRange, getMonthRange, isInRange } from '../utils/dates';
 import { money } from '../utils/format';
+import { downloadCSV } from '../utils/csv';
 import PeriodSelector from '../components/PeriodSelector';
+import PieChart from '../components/PieChart';
+import EditarVisitaModal from '../components/EditarVisitaModal';
 import styles from './CuadrePage.module.css';
 
 export default function CuadrePage() {
@@ -12,8 +15,10 @@ export default function CuadrePage() {
   const { docs: productos } = useProductos(empresaId);
   const { docs: camiones } = useCamiones(empresaId);
   const { docs: usuarios } = useUsuarios(empresaId);
+  const { docs: clientes } = useClientes(empresaId);
   const [period, setPeriod] = useState('day');
   const [fecha, setFecha] = useState(today());
+  const [editarParada, setEditarParada] = useState(null);
 
   const week = getWeekRange();
   const month = getMonthRange();
@@ -39,7 +44,7 @@ export default function CuadrePage() {
       const inventarioSalida = {};
       const inventarioVendido = {};
       const inventarioDevuelto = {};
-      const cobros = { efectivo: 0, nequi: 0, pago_directo: 0, por_cobrar: 0 };
+      const cobros = { efectivo: 0, transferencia: 0, empresa: 0 };
       const gastosList = [];
 
       rutasList.forEach(r => {
@@ -95,11 +100,47 @@ export default function CuadrePage() {
       porCobrar: acc.porCobrar + c.porCobrar,
       gastos: acc.gastos + c.totalGastos,
       neto: acc.neto + c.neto,
-    }), { ventas: 0, cobrado: 0, porCobrar: 0, gastos: 0, neto: 0 });
+      efectivo: acc.efectivo + (c.cobros.efectivo || 0),
+      transferencia: acc.transferencia + (c.cobros.transferencia || 0),
+      empresa: acc.empresa + (c.cobros.empresa || 0),
+    }), { ventas: 0, cobrado: 0, porCobrar: 0, gastos: 0, neto: 0, efectivo: 0, transferencia: 0, empresa: 0 });
   }, [byCamion]);
+
+  const pagosSegments = useMemo(() => [
+    { label: 'Efectivo', value: totals.efectivo, color: '#22C55E' },
+    { label: 'Transferencia', value: totals.transferencia, color: '#1693A5' },
+    { label: 'Empresa', value: totals.empresa, color: '#F59E0B' },
+  ], [totals]);
 
   function prodName(pid) {
     return productos.find(p => p.id === pid)?.nombre || `#${pid}`;
+  }
+
+  function exportarCSV() {
+    const periodoLabel = period === 'day' ? fecha : period === 'week' ? 'semana-actual' : 'mes-actual';
+    // Detalle por camión
+    const rows = byCamion.map(c => ({
+      Camión: c.camion?.nombre || c.camionId,
+      Placa: c.camion?.placa || '—',
+      Conductor: c.conductor?.nombre || '—',
+      'Total vendido': c.totalVentas,
+      'Total cobrado': c.totalCobrado,
+      'Por cobrar': c.porCobrar,
+      'Gastos': c.totalGastos,
+      'Neto': c.neto,
+    }));
+    // Fila de totales
+    rows.push({
+      Camión: 'TOTAL GENERAL',
+      Placa: '',
+      Conductor: '',
+      'Total vendido': totals.ventas,
+      'Total cobrado': totals.cobrado,
+      'Por cobrar': totals.porCobrar,
+      'Gastos': totals.gastos,
+      'Neto': totals.neto,
+    });
+    downloadCSV(rows, `cuadre-${periodoLabel}.csv`);
   }
 
   return (
@@ -126,7 +167,7 @@ export default function CuadrePage() {
       {byCamion.map(c => (
         <div key={c.camionId} className={styles.camionCard}>
           <div className={styles.camionHeader}>
-            <span className={styles.camionName}>🚛 {c.camion?.nombre || c.camionId}</span>
+            <span className={styles.camionName}>{c.camion?.nombre || c.camionId}</span>
             <span className={styles.camionConductor}>{c.conductor?.nombre || '—'}</span>
           </div>
 
@@ -165,8 +206,8 @@ export default function CuadrePage() {
                 <h4 className={styles.sectionTitle}>Cobros</h4>
                 <div className={styles.cobroGrid}>
                   <div><span className={styles.cobroLabel}>Efectivo</span><span className={styles.green}>{money(c.cobros.efectivo)}</span></div>
-                  <div><span className={styles.cobroLabel}>Nequi</span><span className={styles.green}>{money(c.cobros.nequi)}</span></div>
-                  <div><span className={styles.cobroLabel}>Pago directo</span><span className={styles.green}>{money(c.cobros.pago_directo)}</span></div>
+                  <div><span className={styles.cobroLabel}>Transferencia</span><span className={styles.green}>{money(c.cobros.transferencia)}</span></div>
+                  <div><span className={styles.cobroLabel}>Empresa</span><span className={styles.green}>{money(c.cobros.empresa)}</span></div>
                   <div><span className={styles.cobroLabel}>Por cobrar</span><span className={styles.red}>{money(c.porCobrar)}</span></div>
                 </div>
               </div>
@@ -186,6 +227,46 @@ export default function CuadrePage() {
               <div className={styles.section}>
                 <h4 className={styles.sectionTitle}>Garrafones vacíos recogidos</h4>
                 <span className={styles.bigNumber}>{c.totalVacios}</span>
+              </div>
+
+              {/* Paradas individuales */}
+              <div className={styles.section}>
+                <h4 className={styles.sectionTitle}>Paradas del día</h4>
+                <table className={styles.miniTable}>
+                  <thead>
+                    <tr>
+                      <th>Cliente</th><th>Vendido</th><th>Cobrado</th><th>Forma de pago</th><th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {c.rutasList.flatMap(ruta =>
+                      (ruta.paradas || [])
+                        .filter(p => p.estado === 'visitado')
+                        .map(p => {
+                          const cliente = clientes.find(cl => cl.id === p.clienteId);
+                          return (
+                            <tr key={`${ruta.id}-${p.id}`}>
+                              <td>{cliente?.nombre || p.clienteId}</td>
+                              <td className={styles.green}>{money(p.totalVenta)}</td>
+                              <td>{money(p.totalCobrado)}</td>
+                              <td className={styles.muted}>{p.formaPago || '—'}</td>
+                              <td>
+                                <button
+                                  className={styles.editBtn}
+                                  onClick={() => setEditarParada({ parada: p, ruta, cliente })}
+                                >
+                                  Corregir
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })
+                    )}
+                    {c.rutasList.every(r => !(r.paradas || []).some(p => p.estado === 'visitado')) && (
+                      <tr><td colSpan={5} className={styles.noData}>Sin paradas visitadas</td></tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </>
           ) : (
@@ -208,20 +289,37 @@ export default function CuadrePage() {
 
       {/* Totals */}
       {byCamion.length > 0 && (
-        <div className={styles.totalCard}>
-          <h3 className={styles.totalTitle}>Resumen total</h3>
-          <div className={styles.totalGrid}>
-            <div><span>Total ventas</span><span className={styles.green}>{money(totals.ventas)}</span></div>
-            <div><span>Total cobrado</span><span className={styles.green}>{money(totals.cobrado)}</span></div>
-            <div><span>Cuentas × cobrar</span><span className={styles.red}>{money(totals.porCobrar)}</span></div>
-            <div><span>Gastos</span><span className={styles.red}>{money(totals.gastos)}</span></div>
-            <div className={styles.netoTotal}><span>NETO</span><span className={totals.neto >= 0 ? styles.green : styles.red}>{money(totals.neto)}</span></div>
+        <>
+          <div className={styles.totalCard}>
+            <h3 className={styles.totalTitle}>Resumen total</h3>
+            <div className={styles.totalGrid}>
+              <div><span>Total ventas</span><span className={styles.green}>{money(totals.ventas)}</span></div>
+              <div><span>Total cobrado</span><span className={styles.green}>{money(totals.cobrado)}</span></div>
+              <div><span>Cuentas × cobrar</span><span className={styles.red}>{money(totals.porCobrar)}</span></div>
+              <div><span>Gastos</span><span className={styles.red}>{money(totals.gastos)}</span></div>
+              <div className={styles.netoTotal}><span>NETO</span><span className={totals.neto >= 0 ? styles.green : styles.red}>{money(totals.neto)}</span></div>
+            </div>
+            <div className={styles.exportBtns}>
+              <button className={styles.exportBtn} onClick={exportarCSV}>Exportar CSV</button>
+            </div>
           </div>
-          <div className={styles.exportBtns}>
-            <button className={styles.stubBtn}>⬇ Excel (Fase 6)</button>
-            <button className={styles.stubBtn}>📄 PDF (Fase 6)</button>
+
+          <div className={styles.totalCard} style={{ marginTop: 16 }}>
+            <h3 className={styles.totalTitle}>Distribución de pagos</h3>
+            <PieChart segments={pagosSegments} />
           </div>
-        </div>
+        </>
+      )}
+
+      {editarParada && (
+        <EditarVisitaModal
+          parada={editarParada.parada}
+          ruta={editarParada.ruta}
+          cliente={editarParada.cliente}
+          productos={productos}
+          empresaId={empresaId}
+          onClose={() => setEditarParada(null)}
+        />
       )}
     </div>
   );

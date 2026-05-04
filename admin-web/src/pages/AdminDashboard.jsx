@@ -8,7 +8,7 @@ export default function AdminDashboard() {
     <div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.headerLeft}>
-          <span className={styles.headerIcon}>🗺️</span>
+          <span className={styles.headerIcon}></span>
           <span className={styles.headerTitle}>RutaApp Admin</span>
         </div>
         <div className={styles.headerRight}>
@@ -21,7 +21,7 @@ export default function AdminDashboard() {
 
       <main className={styles.main}>
         <div className={styles.welcomeCard}>
-          <div className={styles.welcomeIcon}>📊</div>
+          <div className={styles.welcomeIcon}></div>
           <h1 className={styles.welcomeTitle}>Panel Admin</h1>
           <p className={styles.welcomeSub}>
             Desde aquí supervisarás camiones, clientes y el cuadre del día.

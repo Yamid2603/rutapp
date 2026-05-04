@@ -1,15 +1,30 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [resetMsg, setResetMsg] = useState('');
+
+  async function handleReset() {
+    if (!email.trim()) { setError('Ingresa tu correo para recuperar la contraseña.'); return; }
+    try {
+      await sendPasswordResetEmail(auth, email.trim());
+      setResetMsg('Correo de recuperación enviado. Revisa tu bandeja.');
+      setError('');
+    } catch {
+      setError('No se pudo enviar el correo. Verifica que el email sea correcto.');
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -33,8 +48,7 @@ export default function LoginPage() {
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.logo}>
-          <span className={styles.logoIcon}>🗺️</span>
-          <span className={styles.logoText}>RUTAAPP</span>
+          <img src="/logo-light.png" alt="RutaApp" className={styles.logoImg} />
           <span className={styles.logoSub}>Panel Administrativo</span>
         </div>
 
@@ -53,22 +67,63 @@ export default function LoginPage() {
 
           <div className={styles.field}>
             <label className={styles.label}>CONTRASEÑA</label>
-            <input
-              className={styles.input}
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
+            <div className={styles.passwordRow}>
+              <input
+                className={styles.input}
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                style={{ flex: 1 }}
+              />
+              <button type="button" className={styles.eyeBtn} onClick={() => setShowPassword(v => !v)}>
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           {error && <p className={styles.error}>{error}</p>}
+          {resetMsg && <p className={styles.success}>{resetMsg}</p>}
 
           <button className={styles.button} type="submit" disabled={loading}>
             {loading ? 'Ingresando...' : 'ENTRAR →'}
           </button>
         </form>
+
+        <div className={styles.divider}><span>o</span></div>
+
+        <button
+          className={styles.googleButton}
+          onClick={async () => {
+            setLoading(true);
+            setError('');
+            try {
+              await signInWithGoogle();
+              navigate('/admin');
+            } catch (err) {
+              setError(err.message || 'Error con Google.');
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width={20} />
+          Continuar con Google
+        </button>
+
+        <div style={{ textAlign: 'center', marginTop: 12 }}>
+          <button type="button" className={styles.forgotBtn} onClick={handleReset}>
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: 12 }}>
+          <Link to="/onboarding" style={{ fontSize: 13, color: '#1693A5', textDecoration: 'none', fontWeight: 500 }}>
+            ¿Eres nuevo? Registra tu empresa →
+          </Link>
+        </div>
       </div>
     </div>
   );

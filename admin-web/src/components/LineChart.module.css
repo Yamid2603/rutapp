@@ -1,17 +1,21 @@
+/* ── Line Chart ─────────────────────────────────────────────── */
+
 .wrap { width: 100%; }
 
 .svg {
   width: 100%;
-  height: calc(100% - 24px);
+  height: calc(100% - 28px);
 }
 
 .labels {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0 0;
+  padding: 6px 0 0;
 }
 
 .label {
-  font-size: 10px;
+  font-size: 10.5px;
   color: #8B949E;
+  font-weight: 500;
+  letter-spacing: 0.2px;
 }

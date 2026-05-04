@@ -1,18 +1,22 @@
+/* ── Cuadre del Día ─────────────────────────────────────────── */
+
 .topBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   flex-wrap: wrap;
   gap: 12px;
 }
 
 .pageTitle {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 800;
   color: #1a1a1a;
   margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1;
 }
 
 .controls {
@@ -22,93 +26,106 @@
 }
 
 .dateInput {
-  padding: 6px 12px;
-  background: #F0F0D8;
+  padding: 8px 14px;
+  background: #FFFFFF;
   border: 1px solid #D8D8C0;
   border-radius: 8px;
   color: #1a1a1a;
   font-size: 13px;
   outline: none;
-  color-scheme: dark;
+  color-scheme: light;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: inherit;
 }
-.dateInput:focus { border-color: #1693A5; }
+.dateInput:focus {
+  border-color: #1693A5;
+  box-shadow: 0 0 0 3px rgba(22,147,165,0.10);
+}
 
 .empty {
   text-align: center;
-  color: #5a5a5a;
-  padding: 48px;
+  color: #8B949E;
+  padding: 52px;
   background: #FFFFFF;
-  border: 1px solid #D8D8C0;
-  border-radius: 12px;
+  border: 1px solid rgba(13,36,51,0.06);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
 }
 
+/* ── Camion Card ────────────────────────────────────────────── */
 .camionCard {
   background: #FFFFFF;
-  border: 1px solid #D8D8C0;
-  border-radius: 12px;
-  margin-bottom: 16px;
+  border: 1px solid rgba(13,36,51,0.06);
+  border-radius: 16px;
+  margin-bottom: 20px;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+  transition: box-shadow 0.2s, transform 0.2s;
 }
+.camionCard:hover { box-shadow: 0 4px 16px rgba(13,36,51,0.12), 0 12px 36px rgba(13,36,51,0.08); transform: translateY(-2px); }
 
 .camionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid #D8D8C0;
-  background: #F0F0D8;
+  padding: 16px 22px;
+  border-bottom: 1px solid #EFEFDF;
+  background: linear-gradient(180deg, #FAFAF5 0%, #F0F0D8 100%);
 }
 
 .camionName {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: #1a1a1a;
+  letter-spacing: 0.2px;
 }
 
 .camionConductor {
   font-size: 13px;
-  color: #5a5a5a;
+  color: #8B949E;
 }
 
 .section {
-  padding: 14px 20px;
-  border-bottom: 1px solid #D8D8C0;
+  padding: 16px 22px;
+  border-bottom: 1px solid #EFEFDF;
 }
+.section:last-child { border-bottom: none; }
 
 .sectionTitle {
-  font-size: 12px;
-  font-weight: 600;
-  color: #5a5a5a;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #8B949E;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  margin: 0 0 10px;
+  letter-spacing: 0.9px;
+  margin: 0 0 12px;
 }
 
 .miniTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 12.5px;
 }
 
 .miniTable th {
   text-align: left;
-  padding: 4px 8px;
+  padding: 5px 10px;
   font-size: 10px;
-  font-weight: 600;
-  color: #5a5a5a;
+  font-weight: 700;
+  color: #8B949E;
   text-transform: uppercase;
-  border-bottom: 1px solid #D8D8C0;
+  letter-spacing: 0.6px;
+  border-bottom: 1px solid #EFEFDF;
 }
 
 .miniTable td {
-  padding: 5px 8px;
+  padding: 6px 10px;
   color: #1a1a1a;
 }
 
-.green { color: #22C55E; }
-.amber { color: #1693A5; }
-.red { color: #EF4444; }
+.green { color: #2E7D6B; font-weight: 600; }
+.amber { color: #1693A5; font-weight: 600; }
+.red   { color: #B84B4B; font-weight: 600; }
 
 .cobroGrid, .summaryGrid {
   display: grid;
@@ -120,31 +137,33 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 0;
+  padding: 7px 0;
 }
 
 .cobroLabel {
   font-size: 12px;
-  color: #5a5a5a;
+  color: #8B949E;
 }
 
 .gastoRow {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: 6px 0;
   font-size: 13px;
   color: #1a1a1a;
-  border-bottom: 1px solid #D8D8C0;
+  border-bottom: 1px solid #EFEFDF;
 }
+.gastoRow:last-child { border-bottom: none; }
 
 .noData {
-  color: #5a5a5a;
+  color: #8B949E;
   font-size: 12px;
   margin: 0;
 }
 
 .bigNumber {
-  font-size: 24px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 26px;
   font-weight: 700;
   color: #1693A5;
 }
@@ -153,57 +172,81 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
-  font-weight: 600;
+  padding: 14px 22px;
+  font-weight: 700;
   font-size: 14px;
   color: #1a1a1a;
-  background: #F0F0D8;
+  background: #F7F7EE;
+  border-top: 1px solid #EFEFDF;
 }
 
+/* ── Total card ─────────────────────────────────────────────── */
 .totalCard {
   background: #FFFFFF;
   border: 2px solid #1693A5;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 8px;
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-top: 10px;
+  box-shadow: 0 4px 16px rgba(22,147,165,0.12);
 }
 
 .totalTitle {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: #1693A5;
-  margin: 0 0 14px;
+  margin: 0 0 16px;
+  letter-spacing: 0.3px;
 }
 
 .totalGrid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   font-size: 14px;
   color: #1a1a1a;
 }
 
 .netoTotal {
-  padding-top: 10px;
-  margin-top: 6px;
-  border-top: 1px solid #D8D8C0;
-  font-size: 18px;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 1px solid #E8E8D0;
+  font-size: 20px;
   font-weight: 700;
 }
 
 .exportBtns {
   display: flex;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 18px;
 }
 
-.stubBtn {
+.exportBtn {
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px dashed #D8D8C0;
-  background: transparent;
-  color: #5a5a5a;
+  border: 1px solid #1693A5;
+  background: #1693A5;
+  color: #fff;
   font-size: 12px;
-  cursor: not-allowed;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
 }
+.exportBtn:hover { background: #0F7A8A; }
+
+.muted { color: #8B949E; font-size: 12px; }
+
+.editBtn {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1693A5;
+  background: rgba(22,147,165,0.08);
+  border: 1px solid #1693A5;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.editBtn:hover { background: rgba(22,147,165,0.18); }

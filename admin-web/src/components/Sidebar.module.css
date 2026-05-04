@@ -1,8 +1,9 @@
+/* ── Sidebar — Corporate Navy ───────────────────────────────── */
+
 .sidebar {
   width: 240px;
   min-height: 100vh;
-  background: #FFFFFF;
-  border-right: 1px solid #D8D8C0;
+  background: #0D2433;
   display: flex;
   flex-direction: column;
   position: fixed;
@@ -11,30 +12,50 @@
   z-index: 100;
 }
 
+/* Brand */
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 20px 20px 24px;
-  border-bottom: 1px solid #D8D8C0;
+  padding: 22px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-.brandIcon { font-size: 28px; }
+.brandLogo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
 
 .brandText {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  color: #1693A5;
-  letter-spacing: 2px;
+  color: #FFFFFF;
+  letter-spacing: 3px;
+  text-transform: uppercase;
 }
 
+/* Nav */
 .nav {
   flex: 1;
-  padding: 12px 8px;
+  padding: 16px 10px;
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+/* Section divider label */
+.navSection {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  padding: 12px 10px 4px;
+  margin-top: 4px;
 }
 
 .link {
@@ -42,54 +63,110 @@
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border-radius: 8px;
-  color: #5a5a5a;
+  border-radius: 9px;
+  color: rgba(255,255,255,0.72);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
   transition: background 0.15s, color 0.15s;
+  position: relative;
 }
 
-.link:hover { background: #F0F0D8; color: #1a1a1a; }
+.link:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.88);
+}
 
 .active {
-  background: rgba(22, 147, 165, 0.12);
-  color: #1693A5;
+  background: rgba(22,147,165,0.20);
+  color: #4DD4E4;
+  font-weight: 600;
 }
 
-.linkIcon { font-size: 18px; width: 24px; text-align: center; }
+/* Active left accent bar */
+.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 22px;
+  background: #1693A5;
+  border-radius: 0 3px 3px 0;
+}
 
+.linkIcon {
+  width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 1;
+}
+
+/* User section */
 .userSection {
-  padding: 16px 20px;
-  border-top: 1px solid #D8D8C0;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(22,147,165,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4DD4E4;
+  flex-shrink: 0;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.userMeta {
+  flex: 1;
+  min-width: 0;
 }
 
 .userName {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 2px;
+  color: rgba(255,255,255,0.85);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .userRole {
-  font-size: 11px;
-  color: #5a5a5a;
-  margin-bottom: 10px;
+  font-size: 10.5px;
+  color: rgba(255,255,255,0.38);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
 }
 
 .logoutBtn {
   width: 100%;
   padding: 7px;
   background: transparent;
-  border: 1px solid #D8D8C0;
+  border: 1px solid rgba(255,255,255,0.14);
   border-radius: 6px;
-  color: #5a5a5a;
+  color: rgba(255,255,255,0.42);
   font-size: 12px;
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
+  font-family: inherit;
 }
 
-.logoutBtn:hover { border-color: #1693A5; color: #1693A5; }
+.logoutBtn:hover {
+  border-color: rgba(22,147,165,0.6);
+  color: #4DD4E4;
+}

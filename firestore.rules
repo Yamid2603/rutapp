@@ -2,14 +2,116 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Cada usuario puede leer su propio documento de perfil
-    match /users/{uid} {
-      allow read: if request.auth != null && request.auth.uid == uid;
-      // La escritura de usuarios se hace solo desde el Admin SDK (backend)
+    // ── Helpers ────────────────────────────────────────────────────────────
+    function authed() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return authed() && userDoc().rol == 'admin';
+    }
+
+    function myEmpresaId() {
+      return userDoc().empresaId;
+    }
+
+    // ── Usuarios ───────────────────────────────────────────────────────────
+    // read: el propio usuario siempre, o miembros de la misma empresa
+    //       (admin necesita listar conductores; análisis IA filtra por empresa).
+    // update permitido SOLO para auto-update y SIN cambiar rol/empresa/email.
+    // delete bloqueado al cliente — solo Admin SDK.
+    match /usuarios/{uid} {
+      allow read: if authed() && (
+        request.auth.uid == uid ||
+        (resource.data.empresaId != null && resource.data.empresaId == myEmpresaId())
+      );
+      allow create: if authed() && request.auth.uid == uid;
+      allow update: if authed()
+        && request.auth.uid == uid
+        && request.resource.data.rol == resource.data.rol
+        && request.resource.data.empresaId == resource.data.empresaId
+        && request.resource.data.email == resource.data.email;
+      allow delete: if false;
+    }
+
+    // ── Empresas ───────────────────────────────────────────────────────────
+    match /empresas/{empresaId} {
+      allow create: if authed() && request.resource.data.adminUid == request.auth.uid;
+      allow read: if authed() && myEmpresaId() == empresaId;
+      allow update: if isAdmin() && myEmpresaId() == empresaId;
+      allow delete: if false;
+    }
+
+    // ── Colecciones operativas ─────────────────────────────────────────────
+    // Read filtrado por empresaId: aislamiento por empresa.
+    // Las queries del cliente DEBEN incluir where('empresaId', '==', X) o Firestore las rechaza.
+
+    match /clientes/{id} {
+      allow read: if authed() && resource.data.empresaId == myEmpresaId();
+      allow create, update: if authed() && request.resource.data.empresaId == myEmpresaId();
+      allow delete: if false;
+    }
+
+    match /productos/{id} {
+      allow read: if authed() && resource.data.empresaId == myEmpresaId();
+      allow create: if authed() && request.resource.data.empresaId == myEmpresaId();
+      allow update: if isAdmin() && resource.data.empresaId == myEmpresaId();
+      allow delete: if false;
+    }
+
+    match /camiones/{id} {
+      allow read: if authed() && resource.data.empresaId == myEmpresaId();
+      allow create, update: if isAdmin() && request.resource.data.empresaId == myEmpresaId();
+      allow delete: if false;
+    }
+
+    match /rutas/{id} {
+      allow read: if authed() && resource.data.empresaId == myEmpresaId();
+      allow create: if isAdmin() && request.resource.data.empresaId == myEmpresaId();
+      allow update: if authed() && resource.data.empresaId == myEmpresaId();
+      allow delete: if false;
+    }
+
+    match /historialCliente/{id} {
+      allow read: if authed() && resource.data.empresaId == myEmpresaId();
+      allow create: if authed() && request.resource.data.empresaId == myEmpresaId();
+      allow update: if isAdmin() && resource.data.empresaId == myEmpresaId();
+      allow delete: if false;
+    }
+
+    match /transacciones/{id} {
+      allow read: if authed() && resource.data.empresaId == myEmpresaId();
+      allow create: if authed() && request.resource.data.empresaId == myEmpresaId();
+      allow update, delete: if false;
+    }
+
+    // ── Análisis (solo Cloud Functions escriben) ───────────────────────────
+    match /analisisSemanal/{id} {
+      allow read: if isAdmin() && resource.data.empresaId == myEmpresaId();
       allow write: if false;
     }
 
-    // Por defecto, denegar todo lo demás
+    match /auditLogs/{id} {
+      allow read: if isAdmin() && resource.data.empresaId == myEmpresaId();
+      allow write: if false;
+    }
+
+    // ── Rate limit chatbot (solo Admin SDK escribe) ────────────────────────
+    match /chatbotRateLimit/{id} {
+      allow read, write: if false;
+    }
+
+    // ── Resumen mensual (solo Cloud Functions escriben) ────────────────────
+    match /resumenMensual/{id} {
+      allow read: if isAdmin() && resource.data.empresaId == myEmpresaId();
+      allow write: if false;
+    }
+
+    // ── Bloquear todo lo demás ─────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }

@@ -1,0 +1,68 @@
+/* ── Análisis IA Page ───────────────────────────────────────── */
+
+.container {
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100%;
+}
+
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding: 24px 28px;
+  background: #FFFFFF;
+  border: 1px solid rgba(13,36,51,0.06);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+}
+
+.pageHeader h1 {
+  margin: 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: -0.3px;
+}
+
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  font-size: 14px;
+  color: #8B949E;
+}
+
+.errorBanner {
+  background: rgba(184,75,75,0.08);
+  color: #7A2F2F;
+  padding: 16px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(184,75,75,0.22);
+  margin-bottom: 24px;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.errorBanner strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #B84B4B;
+  font-size: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+  gap: 18px;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

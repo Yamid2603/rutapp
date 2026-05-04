@@ -1,3 +1,5 @@
+/* ── Layout shell ───────────────────────────────────────────── */
+
 .layout {
   display: flex;
   min-height: 100vh;
@@ -7,6 +9,33 @@
 .main {
   flex: 1;
   margin-left: 240px;
-  padding: 28px 32px;
+  padding: 40px 48px;
   max-width: calc(100vw - 240px);
+}
+
+/* Page header pattern used across all pages */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pageTitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.pageSubtitle {
+  font-size: 13px;
+  color: #8B949E;
+  margin: 4px 0 0;
+  font-weight: 400;
 }

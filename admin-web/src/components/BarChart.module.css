@@ -1,3 +1,5 @@
+/* ── Bar Chart ──────────────────────────────────────────────── */
+
 .chart {
   width: 100%;
   padding: 8px 0;
@@ -6,7 +8,7 @@
 .bars {
   display: flex;
   align-items: flex-end;
-  gap: 8px;
+  gap: 10px;
   height: 100%;
 }
 
@@ -27,17 +29,24 @@
 }
 
 .bar {
-  width: 70%;
-  max-width: 40px;
+  width: 72%;
+  max-width: 44px;
   min-height: 4px;
-  background: #F59E0B;
-  border-radius: 4px 4px 0 0;
-  transition: height 0.3s;
+  background: linear-gradient(180deg, #1693A5 0%, #0F7A8A 100%);
+  border-radius: 6px 6px 0 0;
+  transition: height 0.35s ease, opacity 0.2s;
+  cursor: pointer;
+}
+
+.bar:hover {
+  opacity: 0.85;
 }
 
 .label {
-  font-size: 11px;
+  font-size: 10.5px;
   color: #8B949E;
-  margin-top: 6px;
+  margin-top: 8px;
   text-transform: capitalize;
+  font-weight: 500;
+  letter-spacing: 0.2px;
 }

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RutaApp — Análisis IA</title>
+    <style>
+        :root {
+            --bg: #F0F0D8;
+            --card: #FFFFFF;
+            --accent: #1693A5;
+            --border: #D8D8C0;
+            --text: #1a1a1a;
+            --muted: #5a6a6e;
+            --green: #2E8B57;
+            --red: #C0392B;
+            --yellow: #FF9800;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); }
+
+        /* LAYOUT */
+        .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        .sidebar { width: 240px; background: var(--card); border-right: 1px solid var(--border); padding: 20px; position: fixed; left: 0; top: 0; height: 100vh; overflow-y: auto; }
+        .main { margin-left: 240px; padding: 24px; }
+
+        .nav-item { padding: 12px 16px; margin: 8px 0; border-radius: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
+        .nav-item:hover { background: rgba(22, 147, 165, 0.1); border-color: var(--accent); }
+        .nav-item.active { background: rgba(22, 147, 165, 0.12); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+        /* HEADER */
+        .page-header { margin-bottom: 32px; }
+        .page-header h1 { font-size: 32px; margin-bottom: 8px; font-weight: 700; }
+        .page-header p { color: var(--muted); font-size: 14px; }
+
+        /* FILTROS */
+        .filters { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+        .filter-group { display: flex; gap: 8px; align-items: center; }
+        .filter-group label { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; }
+        .filter-group select, .filter-group input { padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { background: #127a8a; }
+
+        /* RESUMEN */
+        .resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .card-resumen { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+        .card-title { font-size: 12px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.8px; margin-bottom: 12px; }
+        .card-value { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .card-value.green { color: var(--green); }
+        .card-value.yellow { color: var(--yellow); }
+        .card-value.red { color: var(--red); }
+        .card-subtitle { font-size: 12px; color: var(--muted); }
+        .semaforo { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        .semaforo.green { background: var(--green); }
+        .semaforo.yellow { background: var(--yellow); }
+        .semaforo.red { background: var(--red); }
+
+        /* SUBSECCIONES */
+        .subsection { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+        .subsection h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+
+        /* TABLA */
+        .table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .table th { text-align: left; padding: 12px; background: #f5f5f5; border-bottom: 2px solid var(--border); font-weight: 700; color: var(--muted); text-transform: uppercase; font-size: 11px; letter-spacing: 0.8px; }
+        .table td { padding: 12px; border-bottom: 1px solid var(--border); }
+        .table tr:hover td { background: rgba(0,0,0,0.02); }
+
+        /* GRÁFICA (PLACEHOLDER) */
+        .chart-placeholder { height: 250px; background: #f9f9f9; border: 1px dashed var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--muted); margin: 20px 0; }
+
+        /* RECOMENDACIÓN */
+        .recommendation { padding: 12px 16px; background: rgba(22, 147, 165, 0.08); border-left: 4px solid var(--accent); border-radius: 4px; font-size: 13px; margin-top: 8px; }
+
+        /* CHATBOT */
+        .chatbot-panel { position: fixed; bottom: 20px; right: 20px; width: 340px; height: 500px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.12); display: flex; flex-direction: column; z-index: 100; }
+        .chatbot-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .chatbot-header h3 { font-size: 14px; font-weight: 700; }
+        .chatbot-close { background: none; border: none; cursor: pointer; font-size: 20px; }
+        .chatbot-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .message { padding: 10px 12px; border-radius: 8px; font-size: 12px; max-width: 85%; }
+        .message.user { align-self: flex-end; background: var(--accent); color: white; }
+        .message.bot { align-self: flex-start; background: #f0f0f0; color: var(--text); }
+        .chatbot-input { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+        .chatbot-input input { flex: 1; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 12px; }
+        .chatbot-input button { background: var(--accent); color: white; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+
+        /* EXPORT */
+        .export-btn { padding: 8px 16px; background: #f5f5f5; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .export-btn:hover { background: #eeeeee; }
+
+        /* RESPONSIVO */
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+            .main { margin-left: 0; }
+            .resumen { grid-template-columns: 1fr; }
+            .chatbot-panel { width: 100%; height: auto; position: static; bottom: auto; right: auto; }
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2 style="margin-bottom: 20px; font-size: 18px;">RutaApp</h2>
+        <div class="nav-item">Cuentas</div>
+        <div class="nav-item">Clientes</div>
+        <div class="nav-item">Cuadre</div>
+        <div class="nav-item">Zonas</div>
+        <div class="nav-item" onclick="showSection('gestion')">Gestión</div>
+        <div class="nav-item active" onclick="showSection('analisis')">📊 Análisis IA</div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+        <div class="container">
+            <!-- HEADER -->
+            <div class="page-header" id="analisis-header">
+                <h1>Análisis IA</h1>
+                <p>Insights y recomendaciones para tu negocio</p>
+            </div>
+
+            <!-- GESTIÓN - UMBRALES (HIDDEN) -->
+            <div id="gestion-section" style="display:none;">
+                <div class="page-header">
+                    <h1>Configurar Umbrales</h1>
+                    <p>Personaliza los límites para tu empresa</p>
+                </div>
+                <div class="subsection" style="max-width: 600px;">
+                    <h2>Umbrales de Análisis IA</h2>
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px;">Conductor Ineficiente (%)</label>
+                            <input type="number" value="70" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            <p style="font-size: 11px; color: var(--muted); margin-top: 4px;">Mínimo % cobrado/vendido permitido</p>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px;">Gastos Anormales (x promedio)</label>
+                            <input type="number" value="2" step="0.1" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            <p style="font-size: 11px; color: var(--muted); margin-top: 4px;">Multiplicador vs promedio para alerta</p>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px;">Cliente Riesgo (meses bajando)</label>
+                            <input type="number" value="3" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            <p style="font-size: 11px; color: var(--muted); margin-top: 4px;">Meses consecutivos bajando compras</p>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px;">Cliente Oportunidad (% pago mín)</label>
+                            <input type="number" value="90" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px;">
+                            <p style="font-size: 11px; color: var(--muted); margin-top: 4px;">% mínimo de pago histórico</p>
+                        </div>
+                        <button class="btn btn-primary" style="align-self: flex-start; margin-top: 10px;">💾 Guardar Umbrales</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILTROS -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label>Período:</label>
+                    <select>
+                        <option>Última semana</option>
+                        <option>Último mes</option>
+                        <option>Personalizado</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Conductor:</label>
+                    <select>
+                        <option>Todos</option>
+                        <option>Juan</option>
+                        <option>Carlos</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary">Aplicar filtros</button>
+            </div>
+
+            <!-- RESUMEN (3 tarjetas) -->
+            <div class="resumen">
+                <div class="card-resumen">
+                    <div class="card-title"><span class="semaforo green"></span>Operación General</div>
+                    <div class="card-value green">✓ Óptima</div>
+                    <div class="card-subtitle">Todas las métricas dentro de rango</div>
+                </div>
+                <div class="card-resumen">
+                    <div class="card-title"><span class="semaforo yellow"></span>Conductores a Revisar</div>
+                    <div class="card-value yellow">2</div>
+                    <div class="card-subtitle">Eficiencia por debajo del umbral</div>
+                </div>
+                <div class="card-resumen">
+                    <div class="card-title"><span class="semaforo red"></span>Clientes en Riesgo</div>
+                    <div class="card-value red">3</div>
+                    <div class="card-subtitle">Deuda por encima del 80% límite</div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 1: EFICIENCIA DE CONDUCTORES -->
+            <div class="subsection">
+                <h2>1. Eficiencia de Conductores</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Conductor</th>
+                            <th>Cobrado/Vendido (%)</th>
+                            <th>Gastos</th>
+                            <th>Promedio/Parada</th>
+                            <th>Tendencia</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Juan García</td>
+                            <td>85%</td>
+                            <td>$28,500</td>
+                            <td>32 min</td>
+                            <td>↑</td>
+                            <td><span class="semaforo green"></span>Óptimo</td>
+                        </tr>
+                        <tr>
+                            <td>Carlos López</td>
+                            <td>68%</td>
+                            <td>$45,200</td>
+                            <td>48 min</td>
+                            <td>↓</td>
+                            <td><span class="semaforo red"></span>Revisar</td>
+                        </tr>
+                        <tr>
+                            <td>Pedro Martínez</td>
+                            <td>78%</td>
+                            <td>$32,100</td>
+                            <td>36 min</td>
+                            <td>→</td>
+                            <td><span class="semaforo yellow"></span>Normal</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="chart-placeholder">📊 Gráfica de barras comparativa</div>
+                <button class="export-btn">📥 Descargar CSV</button>
+            </div>
+
+            <!-- SECCIÓN 2: RIESGO CREDITICIO -->
+            <div class="subsection">
+                <h2>2. Riesgo Crediticio de Clientes</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Deuda Actual</th>
+                            <th>% Pago Histórico</th>
+                            <th>Antigüedad (meses)</th>
+                            <th>Límite Recomendado</th>
+                            <th>Status</th>
+                            <th>Recomendación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cafetería Central</td>
+                            <td>$45,000</td>
+                            <td>95%</td>
+                            <td>14</td>
+                            <td>$180,000</td>
+                            <td><span class="semaforo green"></span>Bajo riesgo</td>
+                            <td>Aumenta límite</td>
+                        </tr>
+                        <tr>
+                            <td>Tienda Don Alirio</td>
+                            <td>$72,000</td>
+                            <td>60%</td>
+                            <td>8</td>
+                            <td>$95,000</td>
+                            <td><span class="semaforo red"></span>Alto riesgo</td>
+                            <td>Cobrar antes de vender</td>
+                        </tr>
+                        <tr>
+                            <td>Restaurante El Fogón</td>
+                            <td>$28,000</td>
+                            <td>82%</td>
+                            <td>5</td>
+                            <td>$120,000</td>
+                            <td><span class="semaforo yellow"></span>Riesgo medio</td>
+                            <td>Monitorear de cerca</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="recommendation">
+                    <strong>💡 IA Insight:</strong> "Tienda Don Alirio está bajando su % de pago. Actúa ahora para evitar perder $150,000 en 30 días."
+                </div>
+                <button class="export-btn">📥 Descargar CSV</button>
+            </div>
+
+            <!-- SECCIÓN 3: OPORTUNIDADES DE VENTA -->
+            <div class="subsection">
+                <h2>3. Oportunidades de Venta</h2>
+                <h3 style="margin-top: 20px; margin-bottom: 12px; font-size: 14px;">Clientes en Riesgo (Compran menos)</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Compra hace 3 meses</th>
+                            <th>Compra ahora</th>
+                            <th>Tendencia</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Supermercado El Paisa</td>
+                            <td>$85,000</td>
+                            <td>$52,000</td>
+                            <td>↓ -39%</td>
+                            <td>Contacta, ofrece descuento</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 style="margin-top: 24px; margin-bottom: 12px; font-size: 14px;">Clientes Oportunidad (Pagan bien, compran regular)</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>% Pago</th>
+                            <th>Compra Mensual</th>
+                            <th>Potencial</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cafetería Central</td>
+                            <td>95%</td>
+                            <td>$28,000</td>
+                            <td>Puede comprar +$12,000</td>
+                            <td>Ofrece mayor límite</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="export-btn">📥 Descargar CSV</button>
+            </div>
+
+            <!-- SECCIÓN 4: DESGLOSE DE GASTOS -->
+            <div class="subsection">
+                <h2>4. Desglose de Gastos</h2>
+                <div class="chart-placeholder">📊 Gráfica de gastos por categoría (Gasolina, Peaje, Mecánica, Otro)</div>
+                <button class="export-btn">📥 Descargar CSV</button>
+            </div>
+
+            <!-- SECCIÓN 5: ALERTAS INTELIGENTES -->
+            <div class="subsection">
+                <h2>5. Alertas Inteligentes</h2>
+                <div style="padding: 16px; background: rgba(255, 152, 0, 0.08); border-left: 4px solid var(--yellow); border-radius: 4px; margin-bottom: 12px;">
+                    <strong>⚠️ Prioridad Alta:</strong> Carlos López tiene eficiencia 68% (umbral: 70%). Gastos anormalmente altos.
+                </div>
+                <div style="padding: 16px; background: rgba(192, 57, 43, 0.08); border-left: 4px solid var(--red); border-radius: 4px; margin-bottom: 12px;">
+                    <strong>🚨 Crítico:</strong> Tienda Don Alirio deuda está en 76% del límite. Si no cobras esta semana, superará.
+                </div>
+                <div style="padding: 16px; background: rgba(46, 139, 87, 0.08); border-left: 4px solid var(--green); border-radius: 4px;">
+                    <strong>✓ Oportunidad:</strong> Cafetería Central paga 95% históricamente. Puedes ofrecerle +$50,000 de crédito sin riesgo.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHATBOT -->
+    <div class="chatbot-panel">
+        <div class="chatbot-header">
+            <h3>🤖 Asistente IA</h3>
+            <button class="chatbot-close">×</button>
+        </div>
+        <div class="chatbot-messages">
+            <div class="message bot">Hola, soy tu asistente de RutaApp. Puedo responder preguntas como: "¿Por qué bajó la venta?", "¿A quién debo cobrar hoy?", "¿Cómo va Juan?"</div>
+            <div class="message user">¿Por qué bajó la venta?</div>
+            <div class="message bot">Según el análisis:<br>• Supermercado El Paisa bajó 39% (cliente riesgo)<br>• Tendencia general es estable<br>• Recomendación: Contacta a Supermercado y ofrece descuento</div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" placeholder="Haz una pregunta...">
+            <button>Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        function showSection(section) {
+            document.getElementById('analisis-header').style.display = section === 'analisis' ? 'block' : 'none';
+            document.getElementById('gestion-section').style.display = section === 'gestion' ? 'block' : 'none';
+            document.querySelectorAll('.filters').forEach(f => f.style.display = section === 'analisis' ? 'flex' : 'none');
+            document.querySelectorAll('.resumen').forEach(r => r.style.display = section === 'analisis' ? 'grid' : 'none');
+            document.querySelectorAll('.subsection').forEach(s => s.style.display = section === 'analisis' ? 'block' : 'none');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        document.querySelector('.chatbot-close').onclick = () => alert('Chatbot cerrado (demo)');
+        document.querySelectorAll('.export-btn').forEach(btn => {
+            btn.onclick = () => alert('CSV descargado (demo)');
+        });
+    </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useRutas, useClientes, useCamiones, useUsuarios } from '../hooks/useCollection';
+import { useRutas, useClientes, useCamiones, useUsuarios, useProductos } from '../hooks/useCollection';
 import { today, getWeekRange, getMonthRange, getPrevMonthRange, isInRange } from '../utils/dates';
 import { money, pct } from '../utils/format';
 import PeriodSelector from '../components/PeriodSelector';
@@ -15,6 +15,7 @@ export default function DashboardPage() {
   const { docs: clientes } = useClientes(empresaId);
   const { docs: camiones } = useCamiones(empresaId);
   const { docs: usuarios } = useUsuarios(empresaId);
+  const { docs: productos } = useProductos(empresaId);
   const [period, setPeriod] = useState('day');
 
   const hoy = today();
@@ -94,7 +95,10 @@ export default function DashboardPage() {
     const topProducts = Object.entries(prodSales)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
-      .map(([id, qty]) => ({ id, qty }));
+      .map(([id, qty]) => ({
+        nombre: productos.find(p => p.id === id)?.nombre || id,
+        qty,
+      }));
 
     // Top conductor
     const conductorSales = {};
@@ -116,7 +120,7 @@ export default function DashboardPage() {
       topClients, topProducts, topConductor,
       comparativo,
     };
-  }, [rutas, clientes, period]);
+  }, [rutas, clientes, productos, period]);
 
   // Camiones activos table
   const camionesHoy = useMemo(() => {
@@ -192,7 +196,7 @@ export default function DashboardPage() {
             {stats.topProducts.length ? stats.topProducts.map((p, i) => (
               <div key={i} className={styles.topRow}>
                 <span className={styles.topRank}>#{i + 1}</span>
-                <span className={styles.topName}>Producto {p.id}</span>
+                <span className={styles.topName}>{p.nombre}</span>
                 <span className={styles.topVal}>{p.qty} uds</span>
               </div>
             )) : <p className={styles.empty}>Sin datos</p>}

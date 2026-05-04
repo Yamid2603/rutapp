@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { doc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
 import { useClientes, useProductos } from '../hooks/useCollection';
 import { money } from '../utils/format';
@@ -12,6 +13,7 @@ import styles from './ClientesPage.module.css';
 const EMPTY = {
   nombre: '', direccion: '', wap1: '', wap2: '', notas: '',
   deuda: 0, fotoUrl: null, pedidoUsual: {}, preciosCliente: {},
+  limiteDeuda: 0,
 };
 
 export default function ClientesPage() {
@@ -20,6 +22,8 @@ export default function ClientesPage() {
   const { docs: productos } = useProductos(empresaId);
   const [modal, setModal] = useState(null);
   const [form, setForm] = useState(EMPTY);
+  const [fotoFile, setFotoFile] = useState(null);
+  const [fotoPreview, setFotoPreview] = useState(null);
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -27,6 +31,8 @@ export default function ClientesPage() {
     const preciosCliente = {};
     productos.forEach(p => { preciosCliente[p.id] = 0; });
     setForm({ ...EMPTY, preciosCliente });
+    setFotoFile(null);
+    setFotoPreview(null);
     setModal('add');
   }
 
@@ -36,7 +42,18 @@ export default function ClientesPage() {
       if (preciosCliente[p.id] === undefined) preciosCliente[p.id] = 0;
     });
     setForm({ ...c, preciosCliente });
+    setFotoFile(null);
+    setFotoPreview(null);
     setModal(c);
+  }
+
+  function handleFotoChange(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setFotoFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setFotoPreview(reader.result);
+    reader.readAsDataURL(file);
   }
 
   function setPrice(productoId, val) {
@@ -46,16 +63,28 @@ export default function ClientesPage() {
   async function handleSave() {
     setSaving(true);
     try {
-      if (modal === 'add') {
-        const ref = doc(db, 'clientes', crypto.randomUUID());
-        await setDoc(ref, { ...form, empresaId, deuda: Number(form.deuda) || 0, creadoEn: serverTimestamp() });
-      } else {
-        const ref = doc(db, 'clientes', modal.id);
-        const updates = { ...form };
-        delete updates.id;
-        updates.deuda = Number(form.deuda) || 0;
-        await updateDoc(ref, updates);
+      const isAdd = modal === 'add';
+      const clienteId = isAdd ? crypto.randomUUID() : modal.id;
+
+      // 1. Upload foto si hay nueva
+      let fotoUrl = form.fotoUrl || null;
+      if (fotoFile) {
+        const fotoRef = ref(storage, `clientes/${clienteId}/foto.jpg`);
+        await uploadBytes(fotoRef, fotoFile);
+        fotoUrl = await getDownloadURL(fotoRef);
       }
+
+      // 2. Construir payload limpio
+      const payload = { ...form, fotoUrl, empresaId, deuda: Number(form.deuda) || 0 };
+      delete payload.id;
+
+      // 3. Escribir
+      if (isAdd) {
+        await setDoc(doc(db, 'clientes', clienteId), { ...payload, creadoEn: serverTimestamp() });
+      } else {
+        await updateDoc(doc(db, 'clientes', clienteId), payload);
+      }
+
       setModal(null);
     } catch (err) {
       alert('Error: ' + err.message);
@@ -132,11 +161,39 @@ export default function ClientesPage() {
         title={modal === 'add' ? 'Nuevo cliente' : 'Editar cliente'}
         wide
       >
+        {/* Foto del cliente */}
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#8B949E', marginBottom: 8 }}>
+            Foto del cliente
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {(fotoPreview || form.fotoUrl) && (
+              <img
+                src={fotoPreview || form.fotoUrl}
+                alt="Foto cliente"
+                style={{ width: 56, height: 56, borderRadius: 28, objectFit: 'cover', border: '2px solid #E8E8D0' }}
+              />
+            )}
+            <label style={{ cursor: 'pointer', padding: '7px 14px', background: '#F0F0D8', border: '1px solid #D8D8C0', borderRadius: 8, fontSize: 13, color: '#374151' }}>
+              {fotoPreview ? '📷 Cambiar foto' : form.fotoUrl ? '📷 Reemplazar foto' : '📷 Subir foto'}
+              <input type="file" accept="image/*" onChange={handleFotoChange} style={{ display: 'none' }} />
+            </label>
+          </div>
+        </div>
         <FormField label="Nombre" value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
         <FormField label="Dirección" value={form.direccion} onChange={e => setForm({ ...form, direccion: e.target.value })} />
         <FormField label="WhatsApp 1" value={form.wap1} onChange={e => setForm({ ...form, wap1: e.target.value })} />
         <FormField label="WhatsApp 2" value={form.wap2 || ''} onChange={e => setForm({ ...form, wap2: e.target.value })} />
         <FormField label="Notas" value={form.notas || ''} onChange={e => setForm({ ...form, notas: e.target.value })} />
+        <FormField
+          label="Límite de crédito ($)"
+          type="number"
+          value={form.limiteDeuda ?? 0}
+          onChange={e => setForm({ ...form, limiteDeuda: Number(e.target.value) || 0 })}
+        />
+        <div style={{ fontSize: 11, color: '#8B949E', marginTop: -8, marginBottom: 4 }}>
+          0 = calculado automáticamente por historial de pagos
+        </div>
         {productos.length > 0 && (
           <>
             <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', color: '#8B949E', margin: '12px 0 8px' }}>

@@ -1,3 +1,5 @@
+/* ── Admin Dashboard (welcome shell) ────────────────────────── */
+
 .container {
   min-height: 100vh;
   background: #F0F0D8;
@@ -8,9 +10,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 24px;
-  background: #FFFFFF;
-  border-bottom: 1px solid #D8D8C0;
+  padding: 16px 28px;
+  background: #0D2433;
+  border-bottom: none;
 }
 
 .headerLeft {
@@ -19,75 +21,78 @@
   gap: 10px;
 }
 
-.headerIcon {
-  font-size: 24px;
-}
+.headerIcon { font-size: 22px; }
 
 .headerTitle {
+  font-family: 'Barlow Condensed', sans-serif;
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  color: #FFFFFF;
+  text-transform: uppercase;
 }
 
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .userEmail {
   font-size: 13px;
-  color: #5a5a5a;
+  color: rgba(255,255,255,0.55);
 }
 
 .logoutBtn {
-  padding: 6px 14px;
+  padding: 7px 14px;
   background: transparent;
-  border: 1px solid #D8D8C0;
-  border-radius: 6px;
-  color: #5a5a5a;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.70);
   font-size: 13px;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  font-family: inherit;
 }
 
 .logoutBtn:hover {
-  border-color: #1693A5;
-  color: #1693A5;
+  border-color: rgba(22,147,165,0.6);
+  color: #4DD4E4;
 }
 
 .main {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 36px 28px;
 }
 
 .welcomeCard {
   text-align: center;
-  padding: 48px 24px;
+  padding: 52px 28px;
   background: #FFFFFF;
-  border: 1px solid #D8D8C0;
-  border-radius: 16px;
-  margin-bottom: 24px;
+  border: 1px solid rgba(13,36,51,0.06);
+  border-radius: 18px;
+  margin-bottom: 28px;
+  box-shadow: 0 4px 20px rgba(13,36,51,0.10), 0 12px 40px rgba(13,36,51,0.07);
 }
 
-.welcomeIcon {
-  font-size: 56px;
-  margin-bottom: 12px;
-}
+.welcomeIcon { font-size: 56px; margin-bottom: 14px; }
 
 .welcomeTitle {
-  font-size: 32px;
-  font-weight: 700;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
   color: #1a1a1a;
   margin: 0 0 12px;
+  letter-spacing: -0.5px;
 }
 
 .welcomeSub {
-  font-size: 14px;
-  color: #5a5a5a;
-  line-height: 1.6;
-  margin: 0;
+  font-size: 14.5px;
+  color: #8B949E;
+  line-height: 1.65;
+  margin: 0 auto;
+  max-width: 500px;
 }
 
 .statsGrid {
@@ -98,26 +103,31 @@
 
 .statCard {
   background: #FFFFFF;
-  border: 1px solid #D8D8C0;
-  border-radius: 12px;
-  padding: 20px;
+  border: 1px solid rgba(13,36,51,0.06);
+  border-radius: 16px;
+  padding: 24px 26px;
+  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+  transition: box-shadow 0.2s, transform 0.2s;
 }
+.statCard:hover { box-shadow: 0 4px 16px rgba(13,36,51,0.12), 0 12px 36px rgba(13,36,51,0.08); transform: translateY(-2px); }
 
 .statLabel {
-  font-size: 11px;
-  font-weight: 600;
-  color: #5a5a5a;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #8B949E;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 8px;
+  letter-spacing: 0.9px;
+  margin-bottom: 10px;
 }
 
 .statValue {
-  font-size: 32px;
-  font-weight: 700;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 34px;
+  font-weight: 800;
   color: #1a1a1a;
+  line-height: 1;
 }
 
-.green { color: #3FB950; }
+.green { color: #2E7D6B; }
 .amber { color: #1693A5; }
-.red { color: #F85149; }
+.red   { color: #B84B4B; }

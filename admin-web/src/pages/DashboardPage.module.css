@@ -1,66 +1,89 @@
+/* ── Dashboard Page ─────────────────────────────────────────── */
+
 .topBar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  align-items: flex-end;
+  margin-bottom: 28px;
   flex-wrap: wrap;
   gap: 12px;
 }
 
 .pageTitle {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 800;
   color: #1a1a1a;
   margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1;
 }
 
+/* ── Stat cards ─────────────────────────────────────────────── */
 .statsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .statCard {
   background: #FFFFFF;
-  border: 1px solid #D8D8C0;
-  border-radius: 12px;
-  padding: 18px 20px;
+  border: 1px solid rgba(13,36,51,0.06);
+  border-radius: 16px;
+  padding: 24px 26px;
+  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.statCard:hover {
+  box-shadow: 0 4px 16px rgba(13,36,51,0.12), 0 12px 36px rgba(13,36,51,0.08);
+  transform: translateY(-2px);
 }
 
 .statLabel {
-  font-size: 11px;
-  font-weight: 600;
-  color: #5a5a5a;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #8B949E;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 6px;
+  letter-spacing: 0.9px;
+  margin-bottom: 8px;
 }
 
 .statValue {
-  font-size: 28px;
-  font-weight: 700;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
   color: #1a1a1a;
+  line-height: 1;
 }
 
-.pct { font-size: 14px; color: #5a5a5a; }
+.pct {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: #8B949E;
+  font-weight: 400;
+}
 
-.green { color: #22C55E; }
-.amber { color: #1693A5; }
-.red   { color: #EF4444; }
+/* Semantic colors — muted, non-saturated */
+.green  { color: #2E7D6B; }
+.amber  { color: #1693A5; }
+.red    { color: #B84B4B; }
 
-.tagGreen, .tagRed {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 2px 8px;
-  border-radius: 10px;
+.tagGreen, .tagRed, .tagAmber {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 8px;
+  padding: 3px 9px;
+  border-radius: 20px;
   font-size: 11px;
   font-weight: 600;
 }
-.tagGreen { background: rgba(34,197,94,0.12); color: #22C55E; }
-.tagRed   { background: rgba(239,68,68,0.12); color: #EF4444; }
+.tagGreen { background: rgba(46,125,107,0.10); color: #2E7D6B; }
+.tagRed   { background: rgba(184,75,75,0.10);  color: #B84B4B; }
+.tagAmber { background: rgba(22,147,165,0.10); color: #1693A5; }
 
+/* ── Content cards ──────────────────────────────────────────── */
 .chartSection {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -69,62 +92,29 @@
 
 .card {
   background: #FFFFFF;
-  border: 1px solid #D8D8C0;
-  border-radius: 12px;
-  padding: 20px;
+  border: 1px solid rgba(13,36,51,0.06);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .cardTitle {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0 0 12px;
-}
-
-.topRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 0;
-  border-bottom: 1px solid #D8D8C0;
-}
-
-.topRank {
-  font-size: 12px;
-  color: #5a5a5a;
-  width: 24px;
-}
-
-.topName {
-  flex: 1;
-  font-size: 13px;
-  color: #1a1a1a;
-}
-
-.topVal {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-
-.mapPlaceholder {
-  text-align: center;
-  padding: 48px;
-  color: #5a5a5a;
   font-size: 16px;
-  border: 2px dashed #D8D8C0;
-  border-radius: 12px;
-}
-
-.empty {
-  color: #5a5a5a;
-  font-size: 13px;
-  text-align: center;
-  padding: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
   margin: 0;
+  letter-spacing: 0.2px;
 }
 
+/* ── Table shared style ─────────────────────────────────────── */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -134,27 +124,81 @@
 .table th {
   text-align: left;
   padding: 8px 12px;
-  font-size: 11px;
-  font-weight: 600;
-  color: #5a5a5a;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #8B949E;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
-  border-bottom: 1px solid #D8D8C0;
+  letter-spacing: 0.7px;
+  border-bottom: 1px solid #EFEFDF;
 }
 
 .table td {
-  padding: 10px 12px;
+  padding: 11px 12px;
   color: #1a1a1a;
-  border-bottom: 1px solid #D8D8C0;
+  border-bottom: 1px solid #EFEFDF;
 }
 
-.badge {
-  display: inline-block;
-  padding: 2px 10px;
-  border-radius: 10px;
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: #FAFAF5; }
+
+.bold { font-weight: 600; }
+
+/* Rank / top list */
+.topRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #EFEFDF;
+}
+.topRow:last-child { border-bottom: none; }
+
+.topRank {
   font-size: 11px;
+  color: #8B949E;
+  width: 22px;
   font-weight: 600;
 }
 
-.badgeGreen { background: rgba(34,197,94,0.12); color: #22C55E; }
-.badgeMuted { background: rgba(139,148,158,0.12); color: #5a5a5a; }
+.topName {
+  flex: 1;
+  font-size: 13px;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.topVal {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badgeGreen { background: rgba(46,125,107,0.10); color: #2E7D6B; }
+.badgeMuted { background: rgba(139,148,158,0.10); color: #8B949E; }
+.badgeTeal  { background: rgba(22,147,165,0.10);  color: #1693A5; }
+
+/* Empty state */
+.empty {
+  color: #8B949E;
+  font-size: 13px;
+  text-align: center;
+  padding: 24px;
+  margin: 0;
+}
+
+.mapPlaceholder {
+  text-align: center;
+  padding: 48px;
+  color: #8B949E;
+  font-size: 14px;
+  border: 1.5px dashed #D8D8C0;
+  border-radius: 12px;
+}
