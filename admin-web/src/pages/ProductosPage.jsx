@@ -7,8 +7,7 @@ import Modal from '../components/Modal';
 import FormField, { Btn } from '../components/FormField';
 import styles from './ProductosPage.module.css';
 
-const EMOJIS = ['💧', '🧴', '📦', '🪣', '🥤'];
-const EMPTY = { nombre: '', precioBase: '', retornable: false };
+const EMPTY = { emoji: '', nombre: '', precioBase: '', retornable: false };
 
 export default function ProductosPage() {
   const { empresaId } = useAuth();
@@ -24,7 +23,7 @@ export default function ProductosPage() {
   }
 
   function openEdit(p) {
-    setForm({ nombre: p.nombre, precioBase: p.precioBase ?? '', retornable: p.retornable ?? false });
+    setForm({ emoji: p.emoji ?? '', nombre: p.nombre, precioBase: p.precioBase ?? '', retornable: p.retornable ?? false });
     setModal(p);
   }
 
@@ -35,9 +34,9 @@ export default function ProductosPage() {
       const retornable = form.retornable ?? false;
       if (modal === 'add') {
         const id = crypto.randomUUID().slice(0, 8);
-        await setDoc(doc(db, 'productos', id), { nombre: form.nombre, precioBase, retornable, empresaId });
+        await setDoc(doc(db, 'productos', id), { emoji: form.emoji.trim(), nombre: form.nombre, precioBase, retornable, empresaId });
       } else {
-        await updateDoc(doc(db, 'productos', modal.id), { nombre: form.nombre, precioBase, retornable });
+        await updateDoc(doc(db, 'productos', modal.id), { emoji: form.emoji.trim(), nombre: form.nombre, precioBase, retornable });
       }
       setModal(null);
     } catch (err) {
@@ -95,9 +94,9 @@ export default function ProductosPage() {
             </tr>
           </thead>
           <tbody>
-            {productos.map((p, i) => (
+            {productos.map((p) => (
               <tr key={p.id}>
-                <td className={styles.emoji}>{EMOJIS[i % EMOJIS.length]}</td>
+                <td className={styles.emoji}>{p.emoji || '📦'}</td>
                 <td className={styles.bold}>{p.nombre}</td>
                 <td style={{ color: p.precioBase > 0 ? 'var(--teal)' : '#8B949E', fontSize: 13 }}>
                   {p.precioBase > 0 ? `$${Number(p.precioBase).toLocaleString('es-CO')}` : '—'}
@@ -111,7 +110,7 @@ export default function ProductosPage() {
               </tr>
             ))}
             {!productos.length && (
-              <tr><td colSpan={4} className={styles.empty}>No hay productos</td></tr>
+              <tr><td colSpan={5} className={styles.empty}>No hay productos</td></tr>
             )}
           </tbody>
         </table>
@@ -122,6 +121,7 @@ export default function ProductosPage() {
         onClose={() => setModal(null)}
         title={modal === 'add' ? 'Nuevo producto' : 'Editar producto'}
       >
+        <FormField label="Emoji (opcional)" value={form.emoji} onChange={e => setForm(f => ({ ...f, emoji: e.target.value }))} placeholder="🧴" maxLength={2} />
         <FormField label="Nombre del producto" value={form.nombre} onChange={e => setForm(f => ({ ...f, nombre: e.target.value }))} />
         <FormField label="Precio base ($)" value={form.precioBase} onChange={e => setForm(f => ({ ...f, precioBase: e.target.value }))} type="number" placeholder="0" />
         <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, fontSize: 14, color: '#1a1a1a', cursor: 'pointer' }}>

@@ -25,12 +25,20 @@ function esEnPeriodo(fecha, inicio, fin) {
   return d >= inicio && d <= fin;
 }
 
+// El conductor guarda gastos como { tipo, valor }; se aceptan también { categoria, monto }
+function gastoCategoria(g) {
+  const c = g.categoria ?? g.tipo;
+  return CATS.includes(c) ? c : 'otro';
+}
+function gastoMonto(g) {
+  return g.monto ?? g.valor ?? 0;
+}
+
 function sumarCategorias(gastos = []) {
   const r = { gasolina: 0, peaje: 0, mecanica: 0, otro: 0, total: 0 };
   for (const g of gastos) {
-    const cat = CATS.includes(g.categoria) ? g.categoria : 'otro';
-    r[cat] += g.monto ?? 0;
-    r.total += g.monto ?? 0;
+    r[gastoCategoria(g)] += gastoMonto(g);
+    r.total += gastoMonto(g);
   }
   return r;
 }
@@ -494,10 +502,9 @@ export function calcularGastos(empresaId, fechaInicio, fechaFin, rutas, usuarios
       const key = d.toISOString().slice(0, 10);
       if (!diasMap[key]) diasMap[key] = [];
       for (const g of ruta.gastos ?? []) {
-        diasMap[key].push({ fecha: key, monto: g.monto ?? 0, categoria: g.categoria ?? 'otro' });
-        const cat = CATS.includes(g.categoria) ? g.categoria : 'otro';
-        globalCats[cat] += g.monto ?? 0;
-        globalCats.total += g.monto ?? 0;
+        diasMap[key].push({ fecha: key, monto: gastoMonto(g), categoria: gastoCategoria(g) });
+        globalCats[gastoCategoria(g)] += gastoMonto(g);
+        globalCats.total += gastoMonto(g);
       }
     }
   }
