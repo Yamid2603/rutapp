@@ -42,7 +42,10 @@ service cloud.firestore {
     match /empresas/{empresaId} {
       allow create: if authed() && request.resource.data.adminUid == request.auth.uid;
       allow read: if authed() && myEmpresaId() == empresaId;
-      allow update: if isAdmin() && myEmpresaId() == empresaId;
+      allow update: if authed() && myEmpresaId() == empresaId && (
+        isAdmin() ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['contadorRemisiones'])
+      );
       allow delete: if false;
     }
 
@@ -71,7 +74,7 @@ service cloud.firestore {
 
     match /rutas/{id} {
       allow read: if authed() && resource.data.empresaId == myEmpresaId();
-      allow create: if isAdmin() && request.resource.data.empresaId == myEmpresaId();
+      allow create: if authed() && request.resource.data.empresaId == myEmpresaId();
       allow update: if authed() && resource.data.empresaId == myEmpresaId();
       allow delete: if false;
     }

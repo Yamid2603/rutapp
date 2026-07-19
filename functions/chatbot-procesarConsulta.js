@@ -11,11 +11,11 @@ const { default: Anthropic } = require('@anthropic-ai/sdk');
 const db = getFirestore();
 
 const MAX_REQUESTS_PER_HOUR = 20;
+const MAX_REQUESTS_PER_DAY = 50;
 
 exports.chatbotProcesarConsulta = onCall({ secrets: ['ANTHROPIC_API_KEY'] }, async (request) => {
   const { auth, data } = request;
 
-  // Autenticación
   if (!auth) throw new HttpsError('unauthenticated', 'Debe estar autenticado');
   if (!data.empresaId || !data.pregunta) throw new HttpsError('invalid-argument', 'Faltan parámetros');
 
@@ -23,16 +23,24 @@ exports.chatbotProcesarConsulta = onCall({ secrets: ['ANTHROPIC_API_KEY'] }, asy
   const userId = auth.uid;
 
   try {
-    // Rate limiting atómico en Firestore (funciona con múltiples instancias)
+    // Rate limiting: 20/hora + 50/día — verificados atómicamente
     const hourKey = Math.floor(Date.now() / 3600000);
-    const limitRef = db.collection('chatbotRateLimit').doc(`${userId}_${hourKey}`);
+    const dateKey = new Date().toISOString().split('T')[0];
+    const hourRef = db.collection('chatbotRateLimit').doc(`${userId}_${hourKey}`);
+    const dayRef  = db.collection('chatbotRateLimit').doc(`${userId}_${dateKey}`);
+
     await db.runTransaction(async tx => {
-      const snap = await tx.get(limitRef);
-      const count = snap.exists ? (snap.data().count || 0) + 1 : 1;
-      if (count > MAX_REQUESTS_PER_HOUR) {
+      const [hourSnap, daySnap] = await Promise.all([tx.get(hourRef), tx.get(dayRef)]);
+      const countHour = hourSnap.exists ? (hourSnap.data().count || 0) + 1 : 1;
+      const countDay  = daySnap.exists  ? (daySnap.data().count  || 0) + 1 : 1;
+      if (countHour > MAX_REQUESTS_PER_HOUR) {
         throw new HttpsError('resource-exhausted', `Límite de ${MAX_REQUESTS_PER_HOUR} preguntas/hora excedido`);
       }
-      tx.set(limitRef, { count, hourKey, userId, updatedAt: Timestamp.now() });
+      if (countDay > MAX_REQUESTS_PER_DAY) {
+        throw new HttpsError('resource-exhausted', `Límite de ${MAX_REQUESTS_PER_DAY} preguntas/día excedido`);
+      }
+      tx.set(hourRef, { count: countHour, hourKey, userId, updatedAt: Timestamp.now() });
+      tx.set(dayRef,  { count: countDay,  dateKey, userId, updatedAt: Timestamp.now() });
     });
 
     // Verificar permisos
@@ -47,15 +55,16 @@ exports.chatbotProcesarConsulta = onCall({ secrets: ['ANTHROPIC_API_KEY'] }, asy
       throw new HttpsError('internal', 'API key de Claude no configurada en Cloud Functions. Contacte al administrador.');
     }
 
-    // Recopilar contexto: últimos 30 días
-    // fecha se guarda como string "YYYY-MM-DD" en rutas/transacciones
+    // Recopilar contexto: últimos 30 días + rutas activas hoy
     const hace30Str = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+    const hoyStr = new Date().toISOString().split('T')[0];
 
-    const [txSnap, rutasSnap, clientesSnap, conductoresSnap] = await Promise.all([
+    const [txSnap, rutasSnap, clientesSnap, conductoresSnap, rutasHoySnap] = await Promise.all([
       db.collection('transacciones').where('empresaId', '==', empresaId).where('fecha', '>=', hace30Str).get(),
       db.collection('rutas').where('empresaId', '==', empresaId).where('fecha', '>=', hace30Str).get(),
       db.collection('clientes').where('empresaId', '==', empresaId).get(),
       db.collection('usuarios').where('empresaId', '==', empresaId).where('rol', '==', 'conductor').get(),
+      db.collection('rutas').where('empresaId', '==', empresaId).where('fecha', '==', hoyStr).where('estado', '==', 'activa').get(),
     ]);
 
     // Compilar métricas
@@ -82,6 +91,17 @@ exports.chatbotProcesarConsulta = onCall({ secrets: ['ANTHROPIC_API_KEY'] }, asy
     const clientesEnRiesgo = clientesSnap.docs.filter(c => (c.data().deuda || 0) > 0).length;
     const deudaTotal = clientesSnap.docs.reduce((s, c) => s + (c.data().deuda || 0), 0);
 
+    // Contexto de rutas activas hoy
+    const mapaClientes = Object.fromEntries(clientesSnap.docs.map(d => [d.id, d.data()]));
+    const mapaUsuarios = Object.fromEntries(conductoresSnap.docs.map(d => [d.id, d.data()]));
+    const rutasHoyResumen = rutasHoySnap.docs.map(d => {
+      const ruta = d.data();
+      const conductor = mapaUsuarios[ruta.conductorId];
+      const paradasPendientes = (ruta.paradas || []).filter(p => p.estado === 'pendiente');
+      const paradasVisitadas = (ruta.paradas || []).filter(p => p.estado === 'visitado');
+      return `  • ${conductor?.nombre || ruta.conductorId}: ${paradasVisitadas.length} visitadas, ${paradasPendientes.length} pendientes. Clientes pendientes: ${paradasPendientes.map(p => { const c = mapaClientes[p.clienteId]; return `${c?.nombre || p.clienteId} (deuda: $${(c?.deuda || 0).toLocaleString('es-CO')})`; }).join(', ') || 'ninguno'}`;
+    }).join('\n');
+
     const resumenDatos = {
       periodo: `últimos 30 días`,
       totalTransacciones: txSnap.size,
@@ -96,7 +116,10 @@ exports.chatbotProcesarConsulta = onCall({ secrets: ['ANTHROPIC_API_KEY'] }, asy
       totalConductores: conductoresSnap.size,
     };
 
-    // Prompt de sistema
+    const seccionHoy = rutasHoySnap.size > 0
+      ? `\nRUTAS ACTIVAS HOY (${hoyStr}):\n${rutasHoyResumen}`
+      : `\nHOY: No hay rutas activas en este momento.`;
+
     const promptSistema = `Eres un asistente de análisis empresarial para RutaApp, plataforma de distribución de rutas.
 
 CONTEXTO EMPRESA (${resumenDatos.periodo}):
@@ -108,6 +131,7 @@ ${gastosDetalle ? 'Desglose de gastos:\n' + gastosDetalle : '  (sin gastos regis
 - Transacciones: ${resumenDatos.totalTransacciones} en ${resumenDatos.totalRutas} rutas
 - Clientes con deuda: ${resumenDatos.clientesEnRiesgo} de ${resumenDatos.totalClientes} (deuda acumulada: $${resumenDatos.deudaTotal.toLocaleString('es-CO')} COP)
 - Conductores activos: ${resumenDatos.totalConductores}
+${seccionHoy}
 
 Tu objetivo: responder preguntas sobre los datos, identificar tendencias, sugerir mejoras.
 Sé conciso (máx 150 palabras). Si hay ambigüedad, pide aclaración.
@@ -122,7 +146,7 @@ Usa formato: análisis corto + recomendación accionable.`;
     ];
 
     const response = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: 500,
       system: promptSistema,
       messages: mensajesClaude,

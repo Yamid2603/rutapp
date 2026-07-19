@@ -7,7 +7,7 @@ import FormField, { Btn } from '../components/FormField';
 import styles from './GestionPage.module.css';
 
 export default function PerfilAdminPage() {
-  const { user, empresaId } = useAuth();
+  const { user, empresaId, signOut } = useAuth();
 
   const [form, setForm] = useState({ nombre: '', wap: '', email: '' });
   const [empresa, setEmpresa] = useState('');
@@ -176,6 +176,30 @@ export default function PerfilAdminPage() {
           </p>
         </div>
       )}
+
+      {/* Cerrar sesión */}
+      <div className={styles.card}>
+        <h3 className={styles.cardTitle}>Sesión</h3>
+        <p style={{ fontSize: 13, color: '#8B949E', marginBottom: 12 }}>
+          Cierra sesión en este dispositivo. Podrás volver a entrar cuando quieras.
+        </p>
+        <button
+          onClick={signOut}
+          style={{
+            padding: '10px 18px',
+            background: '#FFFFFF',
+            color: '#B84B4B',
+            border: '1.5px solid rgba(184,75,75,0.40)',
+            borderRadius: 8,
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: 'pointer',
+            fontFamily: 'inherit',
+          }}
+        >
+          Cerrar sesión
+        </button>
+      </div>
     </div>
   );
 }

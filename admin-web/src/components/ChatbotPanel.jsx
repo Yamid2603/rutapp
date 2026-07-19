@@ -12,12 +12,6 @@ export default function ChatbotPanel({ empresaId }) {
   const messagesEndRef = useRef(null);
   const { enviarConsultaAlChatbot } = useChatbot(empresaId);
 
-  // Debug: verificar que el componente se renderiza
-  if (!empresaId) {
-    console.warn('[ChatbotPanel] No empresaId provided, usando fallback');
-  }
-  console.log('[ChatbotPanel] Renderizado con empresaId:', empresaId);
-
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);

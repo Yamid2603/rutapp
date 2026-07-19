@@ -236,3 +236,10 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .card { padding: 32px 24px 28px; }
+  .logoImg { width: 72px; height: 72px; }
+  .logo { margin-bottom: 28px; }
+}

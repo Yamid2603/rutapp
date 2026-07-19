@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Preview Remisión RutaApp</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #E2E8F0; font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; }
+  .page { background: #F1F5F9; max-width: 680px; margin: 0 auto; padding: 32px; border-radius: 8px; }
+  .card { background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 28px; }
+
+  /* Header */
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+  .header-left h1 { font-size: 28px; font-weight: 800; color: #0D2433; }
+  .header-left .numero { font-size: 14px; color: #5a5a5a; margin-top: 4px; }
+  .header-left .fecha { font-size: 13px; color: #5a5a5a; margin-top: 2px; }
+  .logo-box { border: 1.5px solid #CBD5E1; border-radius: 6px; padding: 8px 14px; text-align: center; min-width: 110px; }
+  .logo-box .empresa-nombre { font-size: 11px; font-weight: 700; color: #0D2433; line-height: 1.3; }
+  .logo-box .empresa-sub { font-size: 9px; color: #8B949E; margin-top: 2px; }
+
+  /* Divider */
+  .divider { border: none; border-top: 1px solid #E8ECF0; margin: 18px 0; }
+
+  /* Cliente */
+  .section-label { font-size: 12px; font-weight: 700; color: #0D2433; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .cliente-nombre { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+  .cliente-dir { font-size: 13px; color: #5a5a5a; margin-top: 2px; }
+
+  /* Tabla */
+  .tabla { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .tabla thead tr { border-top: 2px solid #0D2433; border-bottom: 2px solid #0D2433; }
+  .tabla thead th { font-size: 12px; font-weight: 700; color: #0D2433; padding: 8px 10px; text-align: left; background: transparent; }
+  .tabla thead th:last-child { text-align: right; }
+  .tabla tbody tr:nth-child(odd)  { background: #FFFFFF; }
+  .tabla tbody tr:nth-child(even) { background: #F8FAFC; }
+  .tabla tbody td { font-size: 13px; color: #1a1a1a; padding: 8px 10px; }
+  .tabla tbody td:last-child { text-align: right; font-weight: 600; }
+
+  /* Totales */
+  .totales-wrap { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .totales { width: 45%; }
+  .totales-row { display: flex; justify-content: space-between; font-size: 13px; color: #1a1a1a; padding: 4px 0; }
+  .totales-row.deuda-ant { color: #DC2626; font-weight: 600; }
+  .totales-row.recibido { font-weight: 600; }
+  .totales-divider { border: none; border-top: 1px solid #CBD5E1; margin: 8px 0; }
+  .caja-final { background: #0D2433; border-radius: 6px; padding: 10px 14px; margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .caja-final.cero { background: #0F766E; }
+  .caja-final span { font-size: 12px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.3px; }
+
+  /* Forma de pago */
+  .forma-pago { font-size: 12px; color: #5a5a5a; margin-top: 14px; }
+  .forma-pago strong { color: #1a1a1a; }
+
+  /* Footer */
+  .footer { display: flex; justify-content: space-between; margin-top: 28px; padding-top: 16px; border-top: 1px solid #E8ECF0; }
+  .footer-col { font-size: 11px; color: #8B949E; line-height: 1.7; }
+  .footer-col strong { color: #5a5a5a; display: block; margin-bottom: 2px; }
+  .footer-col.right { text-align: right; }
+  .disclaimer { font-size: 10px; color: #94A3B8; font-style: italic; text-align: center; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="card">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <h1>Remisión de Venta</h1>
+        <div class="numero">N° 00007</div>
+        <div class="fecha">20 de mayo de 2026</div>
+      </div>
+      <div class="logo-box">
+        <div class="empresa-nombre">Distribuidora<br>El Manantial</div>
+        <div class="empresa-sub">Agua Purificada</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Cliente -->
+    <div class="section-label">Datos del cliente</div>
+    <div class="cliente-nombre">Tienda Doña Carmen</div>
+    <div class="cliente-dir">Calle 45 #12-30, Bogotá</div>
+
+    <!-- Tabla productos -->
+    <table class="tabla">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th style="text-align:center">Cant.</th>
+          <th style="text-align:right">Precio</th>
+          <th style="text-align:right">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Garrafón 18.9L</td>
+          <td style="text-align:center">4</td>
+          <td style="text-align:right">$4.500</td>
+          <td>$18.000</td>
+        </tr>
+        <tr>
+          <td>Bolsa 6L</td>
+          <td style="text-align:center">2</td>
+          <td style="text-align:right">$2.000</td>
+          <td>$4.000</td>
+        </tr>
+        <tr>
+          <td>Paquete Bolsa 350ml x4</td>
+          <td style="text-align:center">3</td>
+          <td style="text-align:right">$1.500</td>
+          <td>$4.500</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Totales -->
+    <div class="totales-wrap">
+      <div class="totales">
+        <div class="totales-row">
+          <span>Total compra</span>
+          <span>$26.500</span>
+        </div>
+        <div class="totales-row deuda-ant">
+          <span>Deuda anterior</span>
+          <span>$12.000</span>
+        </div>
+        <div class="totales-row recibido">
+          <span>Total en cuenta</span>
+          <span>$38.500</span>
+        </div>
+        <div class="totales-row recibido">
+          <span>Recibido</span>
+          <span>$30.000</span>
+        </div>
+        <hr class="totales-divider">
+        <div class="caja-final">
+          <span>DEUDA PENDIENTE</span>
+          <span>$8.500</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ejemplo cuenta en cero (comentado) -->
+    <!--
+    <div class="caja-final cero">
+      <span>CUENTA EN CERO ✓</span>
+      <span>$0</span>
+    </div>
+    -->
+
+    <div class="forma-pago">Forma de pago: <strong>Efectivo</strong></div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-col">
+        <strong>Distribuidora El Manantial</strong>
+        NIT: 900.123.456-7<br>
+        Tel: +57 310 000 0000<br>
+        Bogotá, Colombia
+      </div>
+      <div class="footer-col right">
+        <strong>Generado por RutaApp</strong>
+        rutapp-cfa16.web.app
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      Este documento es una remisión interna y no reemplaza una factura electrónica con validez ante la DIAN.
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

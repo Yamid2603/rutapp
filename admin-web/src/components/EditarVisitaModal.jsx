@@ -16,6 +16,7 @@ export default function EditarVisitaModal({ parada, ruta, cliente, productos, em
   const [totalCobrado, setTotalCobrado] = useState(String(parada.totalCobrado ?? 0));
   const [formaPago, setFormaPago] = useState(parada.formaPago || 'efectivo');
   const [saving, setSaving] = useState(false);
+  const [confirmandoAnular, setConfirmandoAnular] = useState(false);
 
   const nuevaTotalVenta = useMemo(() =>
     productos.reduce((sum, p) => {
@@ -24,6 +25,44 @@ export default function EditarVisitaModal({ parada, ruta, cliente, productos, em
       return sum + qty * precio;
     }, 0)
   , [cantidades, productos, cliente]);
+
+  async function handleAnular() {
+    setSaving(true);
+    try {
+      const deudaAnteriorVisita = (parada.totalVenta ?? 0) - (parada.totalCobrado ?? 0);
+      const nuevaDeuda = Math.max(0, (cliente?.deuda ?? 0) - deudaAnteriorVisita);
+
+      const paradasActualizadas = ruta.paradas.map(p =>
+        p.id === parada.id
+          ? { ...p, cantidades: {}, totalVenta: 0, totalCobrado: 0, anulada: true }
+          : p
+      );
+      await updateDoc(doc(db, 'rutas', ruta.id), { paradas: paradasActualizadas });
+
+      await addDoc(collection(db, 'transacciones'), {
+        tipo: 'anulacion',
+        empresaId,
+        rutaId: ruta.id,
+        clienteId: cliente?.id,
+        fecha: ruta.fecha,
+        cantidadesAnuladas: parada.cantidades,
+        totalVentaAnulada: parada.totalVenta ?? 0,
+        totalCobradoAnulado: parada.totalCobrado ?? 0,
+        deudaResultante: nuevaDeuda,
+        anuladoEn: serverTimestamp(),
+      });
+
+      if (cliente?.id) {
+        await updateDoc(doc(db, 'clientes', cliente.id), { deuda: nuevaDeuda });
+      }
+
+      onClose();
+    } catch (e) {
+      alert('Error al anular: ' + e.message);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function handleGuardar() {
     const cobrado = parseInt(totalCobrado, 10) || 0;
@@ -147,12 +186,33 @@ export default function EditarVisitaModal({ parada, ruta, cliente, productos, em
           </div>
         ) : null}
 
-        <div className={styles.actions}>
-          <button className={styles.btnSecondary} onClick={onClose} disabled={saving}>Cancelar</button>
-          <button className={styles.btnPrimary} onClick={handleGuardar} disabled={saving}>
-            {saving ? 'Guardando...' : 'Guardar corrección'}
-          </button>
-        </div>
+        {confirmandoAnular ? (
+          <div className={styles.anularBox}>
+            <p className={styles.anularWarning}>
+              Esto pondrá la venta en $0 y ajustará la deuda del cliente. No se puede deshacer.
+            </p>
+            <div className={styles.anularActions}>
+              <button className={styles.btnSecondary} onClick={() => setConfirmandoAnular(false)} disabled={saving}>
+                Cancelar
+              </button>
+              <button className={styles.btnAnularConfirm} onClick={handleAnular} disabled={saving}>
+                {saving ? 'Anulando...' : 'Confirmar anulación'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.actions}>
+            <button className={styles.btnAnular} onClick={() => setConfirmandoAnular(true)} disabled={saving}>
+              Anular esta venta
+            </button>
+            <div className={styles.actionsRight}>
+              <button className={styles.btnSecondary} onClick={onClose} disabled={saving}>Cancelar</button>
+              <button className={styles.btnPrimary} onClick={handleGuardar} disabled={saving}>
+                {saving ? 'Guardando...' : 'Guardar corrección'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </Modal>
   );

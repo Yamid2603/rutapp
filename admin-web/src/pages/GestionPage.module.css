@@ -181,3 +181,14 @@
   font-family: inherit;
 }
 .logoUploadBtn:hover { border-color: #1693A5; color: #1693A5; }
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .pageTitle { font-size: 26px; margin-bottom: 18px; }
+  .card { padding: 18px; }
+  .cardHeader { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .card { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table { min-width: 520px; }
+  .exportGrid { grid-template-columns: 1fr; }
+  .configGrid { grid-template-columns: 1fr; }
+}

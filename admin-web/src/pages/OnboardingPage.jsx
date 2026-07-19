@@ -18,6 +18,7 @@ import UbicacionPicker from '../components/UbicacionPicker';
 import styles from './OnboardingPage.module.css';
 
 const TOTAL = 5;
+const MAX_PRODUCTOS = 3;
 
 export default function OnboardingPage() {
   const { user, role, loading: authLoading } = useAuth();
@@ -41,8 +42,8 @@ export default function OnboardingPage() {
   const [codigoPais, setCodigoPais] = useState('+57');
   const [adminUsedGoogle, setAdminUsedGoogle] = useState(false);
 
-  // Paso 4
-  const [producto, setProducto] = useState({ emoji: '', nombre: '' });
+  // Paso 4 — múltiples productos
+  const [productos, setProductos] = useState([{ emoji: '', nombre: '' }]);
   const [conductor, setConductor] = useState({ nombre: '', email: '', passwordTemp: '', telefono: '' });
 
   useEffect(() => {
@@ -84,8 +85,13 @@ export default function OnboardingPage() {
   }
 
   function validarPaso4() {
-    if (!producto.emoji.trim()) return 'El emoji del producto es requerido';
-    if (!producto.nombre.trim()) return 'El nombre del producto es requerido';
+    const primerProducto = productos[0];
+    if (!primerProducto.emoji.trim()) return 'El emoji del primer producto es requerido';
+    if (!primerProducto.nombre.trim()) return 'El nombre del primer producto es requerido';
+    for (let i = 1; i < productos.length; i++) {
+      if (productos[i].emoji.trim() && !productos[i].nombre.trim()) return `Nombre del producto ${i + 1} requerido`;
+      if (!productos[i].emoji.trim() && productos[i].nombre.trim()) return `Emoji del producto ${i + 1} requerido`;
+    }
     if (!conductor.nombre.trim()) return 'El nombre del conductor es requerido';
     if (!conductor.email.includes('@')) return 'Email del conductor inválido';
     if (conductor.passwordTemp.length < 6) return 'La contraseña temporal debe tener al menos 6 caracteres';
@@ -94,6 +100,20 @@ export default function OnboardingPage() {
       if (telErr) return telErr;
     }
     return null;
+  }
+
+  function agregarProducto() {
+    if (productos.length < MAX_PRODUCTOS) {
+      setProductos(p => [...p, { emoji: '', nombre: '' }]);
+    }
+  }
+
+  function eliminarProducto(idx) {
+    setProductos(p => p.filter((_, i) => i !== idx));
+  }
+
+  function actualizarProducto(idx, campo, valor) {
+    setProductos(p => p.map((prod, i) => i === idx ? { ...prod, [campo]: valor } : prod));
   }
 
   async function guardarEmpresaYAdmin(adminUid, adminEmail, adminNombre) {
@@ -156,8 +176,6 @@ export default function OnboardingPage() {
     try {
       const provider = new GoogleAuthProvider();
       const cred = await signInWithPopup(auth, provider);
-
-      // Anti-sobrescritura: si esa cuenta Google ya tiene empresa, redirigir a login
       const existingDoc = await getDoc(doc(db, 'usuarios', cred.user.uid));
       if (existingDoc.exists()) {
         await signOut(auth);
@@ -165,7 +183,6 @@ export default function OnboardingPage() {
         setCargando(false);
         return;
       }
-
       const nombreFinal = admin.nombre || cred.user.displayName || '';
       setAdmin(a => ({ ...a, email: cred.user.email, nombre: nombreFinal }));
       await guardarEmpresaYAdmin(cred.user.uid, cred.user.email, nombreFinal);
@@ -188,9 +205,7 @@ export default function OnboardingPage() {
     setCargando(true);
     setError('');
     try {
-      // 1. Crear conductor PRIMERO (paso fuerte que puede fallar)
       if (adminUsedGoogle) {
-        // Admin autenticado con Google — usar Cloud Function para no cerrar sesión
         const fn = httpsCallable(functions, 'crearConductor');
         await fn({
           email: conductor.email.trim(),
@@ -202,7 +217,6 @@ export default function OnboardingPage() {
         });
         try { await sendPasswordResetEmail(auth, conductor.email.trim()); } catch {}
       } else {
-        // Admin con email/password — flujo original (signOut + signIn)
         const condCred = await createUserWithEmailAndPassword(auth, conductor.email.trim(), conductor.passwordTemp);
         const condUid = condCred.user.uid;
         await setDoc(doc(db, 'usuarios', condUid), {
@@ -219,13 +233,16 @@ export default function OnboardingPage() {
         await signInWithEmailAndPassword(auth, admin.email.trim(), admin.password);
       }
 
-      // 2. Crear producto DESPUÉS (no bloquea nada si falla)
-      await addDoc(collection(db, 'productos'), {
-        emoji: producto.emoji.trim(),
-        nombre: producto.nombre.trim(),
-        empresaId,
-        creadoEn: serverTimestamp(),
-      });
+      // Crear todos los productos (filtrando los vacíos)
+      const productosValidos = productos.filter(p => p.emoji.trim() && p.nombre.trim());
+      await Promise.all(productosValidos.map(p =>
+        addDoc(collection(db, 'productos'), {
+          emoji: p.emoji.trim(),
+          nombre: p.nombre.trim(),
+          empresaId,
+          creadoEn: serverTimestamp(),
+        })
+      ));
 
       setPaso(5);
     } catch (e) {
@@ -270,14 +287,38 @@ export default function OnboardingPage() {
           <div className={styles.paso}>
             <h1 className={styles.titulo}>Bienvenido a RutaApp</h1>
             <p className={styles.subtitulo}>
-              Gestiona tus rutas, conductores y cobranzas en un solo lugar.
+              La plataforma que transforma cómo distribuyes, cobras y analizas tu negocio.
               Configura tu empresa en menos de 3 minutos.
             </p>
             <div className={styles.bienvenidaGrid}>
-              <div className={styles.feature}><span></span><span>Rutas en tiempo real</span></div>
-              <div className={styles.feature}><span></span><span>Control de cobranza</span></div>
-              <div className={styles.feature}><span></span><span>Análisis IA</span></div>
-              <div className={styles.feature}><span></span><span>Gestión de clientes</span></div>
+              <div className={styles.feature}>
+                <div className={styles.featureIcon}>🗺️</div>
+                <div className={styles.featureTexto}>
+                  <div className={styles.featureTitulo}>Rutas en tiempo real</div>
+                  <div className={styles.featureDesc}>Conductor y admin conectados</div>
+                </div>
+              </div>
+              <div className={styles.feature}>
+                <div className={styles.featureIcon}>💰</div>
+                <div className={styles.featureTexto}>
+                  <div className={styles.featureTitulo}>Control de cobranza</div>
+                  <div className={styles.featureDesc}>Deudas y pagos al instante</div>
+                </div>
+              </div>
+              <div className={styles.feature}>
+                <div className={styles.featureIcon}>🤖</div>
+                <div className={styles.featureTexto}>
+                  <div className={styles.featureTitulo}>Análisis con IA</div>
+                  <div className={styles.featureDesc}>Resúmenes automáticos por email</div>
+                </div>
+              </div>
+              <div className={styles.feature}>
+                <div className={styles.featureIcon}>👥</div>
+                <div className={styles.featureTexto}>
+                  <div className={styles.featureTitulo}>Gestión de clientes</div>
+                  <div className={styles.featureDesc}>Historial, fotos y notas</div>
+                </div>
+              </div>
             </div>
             <button className={styles.btnPrimario} onClick={() => setPaso(2)}>
               Registrar mi empresa →
@@ -324,8 +365,8 @@ export default function OnboardingPage() {
                 <label className={styles.label}>LOGO (OPCIONAL)</label>
                 <label className={styles.logoUpload}>
                   {logoPreview
-                    ? <img src={logoPreview} alt="logo" className={styles.logoImg} />
-                    : <span className={styles.logoPlaceholder}>Subir logo</span>
+                    ? <img src={logoPreview} alt="logo" className={styles.logoPreviewImg} />
+                    : <span className={styles.logoPlaceholder}>📁 Subir logo</span>
                   }
                   <input type="file" accept="image/*" onChange={handleLogoChange} style={{ display: 'none' }} />
                 </label>
@@ -373,11 +414,7 @@ export default function OnboardingPage() {
               <div className={styles.campo}>
                 <label className={styles.label}>WHATSAPP PARA REPORTES *</label>
                 <div className={styles.wapRow}>
-                  <select
-                    className={styles.wapSelect}
-                    value={codigoPais}
-                    onChange={e => setCodigoPais(e.target.value)}
-                  >
+                  <select className={styles.wapSelect} value={codigoPais} onChange={e => setCodigoPais(e.target.value)}>
                     <option value="+57">🇨🇴 +57 Colombia</option>
                     <option value="+52">🇲🇽 +52 México</option>
                     <option value="+54">🇦🇷 +54 Argentina</option>
@@ -400,14 +437,9 @@ export default function OnboardingPage() {
                     <option value="+34">🇪🇸 +34 España</option>
                     <option value="+1">🇺🇸 +1 EE.UU.</option>
                   </select>
-                  <input
-                    className={styles.wapInput}
-                    placeholder="300 123 4567"
-                    value={admin.whatsapp}
+                  <input className={styles.wapInput} placeholder="300 123 4567" value={admin.whatsapp}
                     onChange={e => setAdmin({ ...admin, whatsapp: e.target.value.replace(/\D/g, '') })}
-                    type="tel"
-                    maxLength={15}
-                  />
+                    type="tel" maxLength={15} />
                 </div>
                 <span className={styles.wapPreview}>
                   {admin.whatsapp ? `Número: ${codigoPais}${admin.whatsapp}` : 'Solo dígitos, sin espacios'}
@@ -430,27 +462,43 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* ── PASO 4: Producto + Conductor ── */}
+        {/* ── PASO 4: Productos + Conductor ── */}
         {paso === 4 && (
           <div className={styles.paso}>
-            <h2 className={styles.titulo}>Primer producto y conductor</h2>
+            <h2 className={styles.titulo}>Productos y conductor</h2>
             <p className={styles.subtitulo}>Paso 4 de 5 — Puedes agregar más después</p>
 
-            <div className={styles.seccionLabel}>📦 Producto</div>
-            <div className={styles.camposRow}>
-              <div className={styles.campo} style={{ flex: '0 0 80px' }}>
-                <label className={styles.label}>EMOJI *</label>
-                <input className={styles.input} placeholder="🧴" value={producto.emoji}
-                  onChange={e => setProducto({ ...producto, emoji: e.target.value })} maxLength={2} />
-              </div>
-              <div className={styles.campo} style={{ flex: 1 }}>
-                <label className={styles.label}>NOMBRE *</label>
-                <input className={styles.input} placeholder="Shampoo 400ml" value={producto.nombre}
-                  onChange={e => setProducto({ ...producto, nombre: e.target.value })} />
-              </div>
-            </div>
+            <div className={styles.seccionLabel}>📦 Productos ({productos.length}/{MAX_PRODUCTOS})</div>
 
-            <div className={styles.seccionLabel} style={{ marginTop: 20 }}>Conductor</div>
+            {productos.map((prod, idx) => (
+              <div key={idx} className={styles.productoRow}>
+                <div className={styles.camposRow} style={{ flex: 1 }}>
+                  <div className={styles.campo} style={{ flex: '0 0 72px' }}>
+                    <label className={styles.label}>EMOJI *</label>
+                    <input className={styles.input} placeholder="🧴" value={prod.emoji}
+                      onChange={e => actualizarProducto(idx, 'emoji', e.target.value)} maxLength={2} />
+                  </div>
+                  <div className={styles.campo} style={{ flex: 1 }}>
+                    <label className={styles.label}>NOMBRE *</label>
+                    <input className={styles.input} placeholder="Shampoo 400ml" value={prod.nombre}
+                      onChange={e => actualizarProducto(idx, 'nombre', e.target.value)} />
+                  </div>
+                </div>
+                {idx > 0 && (
+                  <button className={styles.btnEliminarProducto} onClick={() => eliminarProducto(idx)} title="Eliminar producto">
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+
+            {productos.length < MAX_PRODUCTOS && (
+              <button className={styles.btnAgregarProducto} onClick={agregarProducto}>
+                + Agregar otro producto
+              </button>
+            )}
+
+            <div className={styles.seccionLabel} style={{ marginTop: 24 }}>🚗 Conductor</div>
             <div className={styles.campos}>
               <div className={styles.campo}>
                 <label className={styles.label}>NOMBRE *</label>
@@ -492,16 +540,22 @@ export default function OnboardingPage() {
           <div className={styles.paso}>
             <div className={styles.exito}>
               <div className={styles.exitoIcon}>🎉</div>
-              <h2 className={styles.titulo}>¡Listo! Tu empresa está configurada</h2>
+              <h2 className={styles.titulo}>¡Todo listo!</h2>
               <p className={styles.subtitulo}>
-                Empresa <strong>{empresa.nombre}</strong> creada exitosamente.
-                El conductor {conductor.nombre} recibirá un email para activar su cuenta.
+                Tu empresa está configurada. El conductor {conductor.nombre} recibirá un email para activar su cuenta.
               </p>
               <div className={styles.resumen}>
-                <div className={styles.resumenItem}><span></span><span>{empresa.nombre}</span></div>
-                <div className={styles.resumenItem}><span>📍</span><span>{empresa.ciudad}</span></div>
-                <div className={styles.resumenItem}><span>📦</span><span>{producto.emoji} {producto.nombre}</span></div>
-                <div className={styles.resumenItem}><span></span><span>{conductor.nombre}</span></div>
+                <div className={styles.resumenItem}><span>🏢</span><span><strong>{empresa.nombre}</strong> — {empresa.ciudad}</span></div>
+                {productos.filter(p => p.emoji && p.nombre).map((p, i) => (
+                  <div key={i} className={styles.resumenItem}><span>📦</span><span>{p.emoji} {p.nombre}</span></div>
+                ))}
+                <div className={styles.resumenItem}><span>🚗</span><span>{conductor.nombre}</span></div>
+              </div>
+              <div className={styles.resumenSiguientes}>
+                <div className={styles.siguientesTitulo}>Próximos pasos</div>
+                <div className={styles.siguientesItem}>① Agrega tus clientes en la sección Clientes</div>
+                <div className={styles.siguientesItem}>② Asigna una ruta en Zonas & Carga</div>
+                <div className={styles.siguientesItem}>③ El conductor descarga la app y empieza</div>
               </div>
             </div>
             <button className={styles.btnPrimario} onClick={() => navigate('/admin')}>

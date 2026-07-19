@@ -184,3 +184,17 @@
 
 .btnEnviar:hover:not(:disabled) { background: #1A3447; }
 .btnEnviar:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .chatbotPanel { bottom: 16px; right: 16px; }
+  .ventana {
+    position: fixed;
+    bottom: 76px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+    height: 70vh;
+    max-height: 540px;
+  }
+}

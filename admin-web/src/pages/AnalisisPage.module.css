@@ -66,3 +66,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 900px) {
+  .pageHeader { padding: 16px 18px; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .pageHeader h1 { font-size: 22px; }
+  .grid { gap: 14px; }
+}

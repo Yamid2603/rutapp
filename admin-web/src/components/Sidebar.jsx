@@ -1,27 +1,28 @@
 import { NavLink, Link } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Wallet, CalendarDays, Settings, Sparkles,
+  LayoutDashboard, Users, Package, Wallet, CalendarDays, Settings, Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import styles from './Sidebar.module.css';
 
 const NAV = [
-  { to: '/admin',           Icon: LayoutDashboard, label: 'Cuentas' },
+  { to: '/admin',           Icon: LayoutDashboard, label: 'Resumen' },
   { to: '/admin/clientes',  Icon: Users,            label: 'Clientes' },
+  { to: '/admin/productos', Icon: Package,          label: 'Productos' },
   { to: '/admin/cuadre',    Icon: Wallet,           label: 'Cuadre del día' },
   { to: '/admin/zonas',     Icon: CalendarDays,     label: 'Zonas & Carga' },
   { to: '/admin/gestion',   Icon: Settings,         label: 'Gestión' },
   { to: '/admin/analisis',  Icon: Sparkles,         label: 'Análisis IA' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen = false, onClose }) {
   const { user, nombre, signOut } = useAuth();
 
   const initials = (nombre || user?.email || '?')
     .split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
 
   return (
-    <aside className={styles.sidebar}>
+    <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
       <div className={styles.brand}>
         <img src="/logo-light.png" alt="RutaApp" className={styles.brandLogo} />
         <span className={styles.brandText}>RUTAAPP</span>
@@ -33,6 +34,7 @@ export default function Sidebar() {
             key={to}
             to={to}
             end={to === '/admin'}
+            onClick={onClose}
             className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
           >
             {({ isActive }) => (
@@ -48,7 +50,7 @@ export default function Sidebar() {
       </nav>
 
       <div className={styles.userSection}>
-        <Link to="/admin/perfil" className={styles.userInfo} style={{ textDecoration: 'none' }}>
+        <Link to="/admin/perfil" onClick={onClose} className={styles.userInfo} style={{ textDecoration: 'none' }}>
           <div className={styles.userAvatar}>{initials}</div>
           <div className={styles.userMeta}>
             <div className={styles.userName}>{nombre || user?.email}</div>

@@ -202,3 +202,19 @@
   border: 1.5px dashed #D8D8C0;
   border-radius: 12px;
 }
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .topBar { align-items: flex-start; }
+  .pageTitle { font-size: 26px; }
+  .statsGrid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .statCard { padding: 16px 16px; }
+  .statValue { font-size: 26px; }
+  .chartSection { grid-template-columns: 1fr; gap: 14px; }
+  .card { padding: 18px; }
+  .table { font-size: 12px; }
+  .table th, .table td { padding: 8px 6px; }
+}
+@media (max-width: 480px) {
+  .statValue { font-size: 22px; }
+}

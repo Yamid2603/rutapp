@@ -250,3 +250,25 @@
   transition: background 0.15s;
 }
 .editBtn:hover { background: rgba(22,147,165,0.18); }
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .topBar { flex-direction: column; align-items: stretch; gap: 14px; }
+  .pageTitle { font-size: 26px; }
+  .controls { flex-wrap: wrap; gap: 8px; }
+  .dateInput { flex: 1; min-width: 140px; }
+  .camionHeader { flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px 16px; }
+  .section { padding: 14px 16px; }
+  .cobroGrid, .summaryGrid { grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+  .miniTable { font-size: 11.5px; }
+  .miniTable th, .miniTable td { padding: 5px 6px; }
+  .totalCard { padding: 18px 16px; }
+  .totalTitle { font-size: 17px; }
+  .netoTotal { font-size: 17px; }
+  .bigNumber { font-size: 22px; }
+  .exportBtns { flex-direction: column; }
+  .exportBtn { width: 100%; }
+}
+@media (max-width: 480px) {
+  .cobroGrid, .summaryGrid { grid-template-columns: 1fr; }
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../config/firebase';
@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
-  const { signIn, signInWithGoogle } = useAuth();
+  const { signIn, signInWithGoogle, user, role, loading: authLoading, error: authError } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,6 +14,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [resetMsg, setResetMsg] = useState('');
+
+  // Si ya hay sesión válida (por ej. tras redirect de Google en móvil), entrar al admin
+  useEffect(() => {
+    if (!authLoading && user && role === 'admin') {
+      navigate('/admin', { replace: true });
+    }
+  }, [authLoading, user, role, navigate]);
 
   async function handleReset() {
     if (!email.trim()) { setError('Ingresa tu correo para recuperar la contraseña.'); return; }
@@ -83,7 +90,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {error && <p className={styles.error}>{error}</p>}
+          {(error || authError) && <p className={styles.error}>{error || authError}</p>}
           {resetMsg && <p className={styles.success}>{resetMsg}</p>}
 
           <button className={styles.button} type="submit" disabled={loading}>

@@ -11,7 +11,7 @@ import FormField, { Btn } from '../components/FormField';
 import styles from './ClientesPage.module.css';
 
 const EMPTY = {
-  nombre: '', direccion: '', wap1: '', wap2: '', notas: '',
+  nombre: '', direccion: '', municipio: '', wap1: '', wap2: '', notas: '',
   deuda: 0, fotoUrl: null, pedidoUsual: {}, preciosCliente: {},
   limiteDeuda: 0,
 };
@@ -95,8 +95,12 @@ export default function ClientesPage() {
 
   function exportCSV() {
     const rows = clientes.map(c => ({
-      Nombre: c.nombre, Dirección: c.direccion, WhatsApp: c.wap1,
-      Deuda: c.deuda || 0, Notas: c.notas,
+      Nombre: c.nombre,
+      Dirección: c.direccion,
+      Municipio: c.municipio || '',
+      WhatsApp: c.wap1,
+      Deuda: c.deuda || 0,
+      Notas: c.notas,
     }));
     downloadCSV(rows, 'clientes.csv');
   }
@@ -129,6 +133,7 @@ export default function ClientesPage() {
             <tr>
               <th>Nombre</th>
               <th>Dirección</th>
+              <th>Municipio</th>
               <th>Saldo</th>
               <th>WhatsApp</th>
               <th></th>
@@ -139,6 +144,7 @@ export default function ClientesPage() {
               <tr key={c.id}>
                 <td className={styles.bold}>{c.nombre}</td>
                 <td>{c.direccion}</td>
+                <td className={styles.muted}>{c.municipio || '—'}</td>
                 <td className={c.deuda > 0 ? styles.red : styles.green}>
                   {money(c.deuda || 0)}
                 </td>
@@ -149,7 +155,7 @@ export default function ClientesPage() {
               </tr>
             ))}
             {!filtered.length && (
-              <tr><td colSpan={5} className={styles.empty}>No hay clientes</td></tr>
+              <tr><td colSpan={6} className={styles.empty}>No hay clientes</td></tr>
             )}
           </tbody>
         </table>
@@ -182,6 +188,7 @@ export default function ClientesPage() {
         </div>
         <FormField label="Nombre" value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
         <FormField label="Dirección" value={form.direccion} onChange={e => setForm({ ...form, direccion: e.target.value })} />
+        <FormField label="Municipio / ciudad" value={form.municipio || ''} onChange={e => setForm({ ...form, municipio: e.target.value })} />
         <FormField label="WhatsApp 1" value={form.wap1} onChange={e => setForm({ ...form, wap1: e.target.value })} />
         <FormField label="WhatsApp 2" value={form.wap2 || ''} onChange={e => setForm({ ...form, wap2: e.target.value })} />
         <FormField label="Notas" value={form.notas || ''} onChange={e => setForm({ ...form, notas: e.target.value })} />

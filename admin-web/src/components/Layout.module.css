@@ -39,3 +39,62 @@
   margin: 4px 0 0;
   font-weight: 400;
 }
+
+/* ── Mobile shell (hamburger + backdrop) ────────────────────── */
+
+.mobileHeader { display: none; }
+.backdrop     { display: none; }
+
+@media (max-width: 900px) {
+  .main {
+    margin-left: 0;
+    max-width: 100vw;
+    padding: 70px 16px 24px;
+  }
+  .pageTitle { font-size: 26px; }
+
+  .mobileHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 54px;
+    padding: 0 12px;
+    background: #0D2433;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .menuBtn {
+    background: transparent;
+    border: 0;
+    color: #fff;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .menuBtn:active { background: rgba(255,255,255,0.1); }
+  .mobileBrand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+  .mobileLogo { width: 28px; height: 28px; object-fit: contain; border-radius: 6px; }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 150;
+  }
+}

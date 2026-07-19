@@ -1,9 +1,36 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { signInWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+} from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 
 const AuthContext = createContext(null);
+
+function isMobile() {
+  if (typeof navigator === 'undefined') return false;
+  return /Mobi|Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+}
+
+async function ensureAdminOrSignOut(firebaseUser) {
+  const userDoc = await getDoc(doc(db, 'usuarios', firebaseUser.uid));
+  if (!userDoc.exists()) {
+    await firebaseSignOut(auth);
+    throw new Error('Tu cuenta no está registrada en RutaApp. Regístrala desde el onboarding.');
+  }
+  const data = userDoc.data();
+  if (data.rol !== 'admin') {
+    await firebaseSignOut(auth);
+    throw new Error('Acceso solo para administradores.');
+  }
+  return data;
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -21,6 +48,13 @@ export function AuthProvider({ children }) {
   }
 
   useEffect(() => {
+    // Procesar resultado de signInWithRedirect (móvil) si lo hubo
+    getRedirectResult(auth).catch((err) => {
+      if (err?.code && err.code !== 'auth/no-auth-event') {
+        setError(err.message || 'Error al iniciar sesión con Google.');
+      }
+    });
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         try {
@@ -49,16 +83,7 @@ export function AuthProvider({ children }) {
     setError(null);
     try {
       const credential = await signInWithEmailAndPassword(auth, email, password);
-      const userDoc = await getDoc(doc(db, 'usuarios', credential.user.uid));
-      if (!userDoc.exists()) {
-        await firebaseSignOut(auth);
-        throw new Error('Usuario no encontrado en el sistema.');
-      }
-      const data = userDoc.data();
-      if (data.rol !== 'admin') {
-        await firebaseSignOut(auth);
-        throw new Error('Acceso solo para administradores.');
-      }
+      const data = await ensureAdminOrSignOut(credential.user);
       return { user: credential.user, role: data.rol };
     } catch (err) {
       const message = err.message || 'Error al iniciar sesión.';
@@ -71,19 +96,22 @@ export function AuthProvider({ children }) {
     setError(null);
     const provider = new GoogleAuthProvider();
     try {
+      if (isMobile()) {
+        // En móvil: redirect (popup es bloqueado/cerrado por el OS)
+        await signInWithRedirect(auth, provider);
+        // El flujo continúa al volver a la página — onAuthStateChanged + getRedirectResult lo manejan
+        return null;
+      }
       const credential = await signInWithPopup(auth, provider);
-      const userDoc = await getDoc(doc(db, 'usuarios', credential.user.uid));
-      if (!userDoc.exists()) {
-        await firebaseSignOut(auth);
-        throw new Error('Tu cuenta Google no está registrada en RutaApp. Regístrala desde el onboarding.');
-      }
-      const data = userDoc.data();
-      if (data.rol !== 'admin') {
-        await firebaseSignOut(auth);
-        throw new Error('Acceso solo para administradores.');
-      }
+      const data = await ensureAdminOrSignOut(credential.user);
       return { user: credential.user, role: data.rol };
     } catch (err) {
+      // Errores típicos en popup que NO son del usuario cerrando a propósito
+      if (err?.code === 'auth/popup-closed-by-user' || err?.code === 'auth/cancelled-popup-request') {
+        const message = 'La ventana de Google se cerró antes de completar el inicio de sesión.';
+        setError(message);
+        throw new Error(message);
+      }
       const message = err.message || 'Error al iniciar sesión con Google.';
       setError(message);
       throw err;

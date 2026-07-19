@@ -255,6 +255,7 @@ export default function GestionPage() {
           Hora: t.hora || '',
           Cliente: cli?.nombre || t.clienteId || '—',
           Dirección: cli?.direccion || '—',
+          Municipio: cli?.municipio || '—',
           Conductor: cond?.nombre || '—',
           'Total vendido': t.totalVenta || 0,
           'Total cobrado': t.totalCobrado || 0,
@@ -278,10 +279,11 @@ export default function GestionPage() {
         ...conDeuda.map(c => ({
           Cliente: c.nombre,
           Dirección: c.direccion || '—',
+          Municipio: c.municipio || '—',
           WhatsApp: c.wap1 || '—',
           Deuda: c.deuda || 0,
         })),
-        { Cliente: 'TOTAL', Dirección: '', WhatsApp: '', Deuda: totalDeuda },
+        { Cliente: 'TOTAL', Dirección: '', Municipio: '', WhatsApp: '', Deuda: totalDeuda },
       ];
       downloadCSV(rows, `cuentas-por-cobrar-${new Date().toISOString().split('T')[0]}.csv`);
     } catch (err) {

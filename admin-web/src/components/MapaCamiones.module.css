@@ -8,6 +8,11 @@
   overflow: hidden;
 }
 
+@media (max-width: 900px) {
+  .mapa { height: 280px; }
+  .empty { padding: 36px 18px; }
+}
+
 .error {
   width: 100%;
   padding: 28px;

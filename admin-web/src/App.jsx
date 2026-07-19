@@ -12,6 +12,7 @@ import GestionPage from './pages/GestionPage';
 import AnalisisPage from './pages/AnalisisPage';
 import PerfilAdminPage from './pages/PerfilAdminPage';
 import OnboardingPage from './pages/OnboardingPage';
+import UpdatePrompt from './components/UpdatePrompt';
 
 function RootRedirect() {
   const { user, role, loading } = useAuth();
@@ -55,6 +56,7 @@ export default function App() {
           />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <UpdatePrompt />
       </AuthProvider>
     </BrowserRouter>
   );

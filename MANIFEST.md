@@ -1,5 +1,5 @@
 # RutaApp — Estado del Proyecto
-**Última actualización:** 2026-05-04 (Email configuration completado ✅)
+**Última actualización:** 2026-05-20 (Admin-web LIVE + APK Android instalado + bugs prueba real)
 
 ---
 
@@ -33,8 +33,19 @@
 | **Email semanal + mensual** | **✅ FUNCIONANDO** |
 | **Cloud Scheduler semanal/mensual** | **✅ ACTIVO** |
 | **Secrets Firebase (EMAIL_USER, EMAIL_PASS)** | **✅ CONFIGURADOS** |
-| PDF logo empresa | ❌ Pendiente conectar |
+| **Chatbot admin (burbuja flotante)** | **✅ Funcionando (Haiku + 20/h + 50/día)** |
+| **Sugerencias IA conductor-app** | **✅ Panel con toggle, cards prioridad** |
+| **OnboardingPage v2** | **✅ Animaciones + múltiples productos** |
+| **GCP Firestore Backup diario** | **✅ ACTIVO (30 días retención)** |
+| **Admin-web deployada en Firebase Hosting** | **✅ LIVE 2026-05-20 — https://rutapp-cfa16.web.app** |
+| **APK Android (EAS Build)** | **✅ GENERADO 2026-05-20, instalado en celular real** |
+| **Google Maps API key unificada** | **✅ Maps JS + Android + iOS habilitados** |
+| PDF logo empresa | ⏳ Probado fallback (texto). Logo real pendiente (El Manantial sin logo) |
 | Ruta retorno a depósito | ❌ Bug conocido |
+| Productos link en Sidebar admin-web | ✅ Fixed 2026-05-20 (requiere rebuild + redeploy) |
+| ClientesPage admin-web guarda lat/lng | ❌ Bug — clientes creados desde web sin coords → no aparecen en mapa |
+| Chatbot Anthropic | ⏳ Sin créditos en console.anthropic.com (no es bug código) |
+| SHA-1 fingerprint Google Sign-In en APK | ⏳ Pendiente extraer del keystore Expo |
 
 ---
 
@@ -84,13 +95,21 @@ No probado con empresa sin datos históricos de transacciones.
 
 ## 🟡 CONFIGURACIÓN PENDIENTE
 
-### Google Sign-In: Android
-SHA-1 fingerprint requerido en Google Cloud Console para Play Store.
-Para Expo Go funciona sin esto.
+### EAS Build — APK conductor-app
+La app del conductor NUNCA ha sido compilada como APK. Para distribuir:
+```bash
+cd conductor-app
+npx eas-cli build --platform android --profile preview
+```
+Requiere cuenta Expo (EAS) y `eas.json` ya configurado con perfil `preview`.
+
+### Google Sign-In: Android — SHA-1 fingerprint
+Requerido en Google Cloud Console para que Google Sign-In funcione en APK/Play Store.
+Para Expo Go funciona sin esto. Al hacer EAS Build, generar SHA-1 del keystore y registrarlo.
 
 ### API Google Maps
 No funciona en localhost (restricción de dominio).
-Se activa automáticamente en Vercel.
+Se activa automáticamente en producción con la key configurada en `.env`.
 
 ### Borrado automático de datos
 Firestore no tiene TTL nativo. Requeriría Cloud Function cron. Fuera de roadmap actual.
@@ -101,19 +120,31 @@ Firestore no tiene TTL nativo. Requeriría Cloud Function cron. Fuera de roadmap
 
 - [ ] Vercel deploy (admin-web) — después de PWA
 - [ ] PWA (manifest.json + service worker + íconos)
-- [ ] Design: OnboardingPage — estilo más tech/corporate, misma paleta
 - [ ] Factor de confianza clientes 1–5 (multiplicador del valor)
-- [ ] IA para optimización de clientes (orden óptimo)
 - [ ] SMS recovery — descartado por costo, revisar si hay demanda real
 - [ ] Patrón semanal de rutas + sugerencia "Repetir semana anterior"
-- [ ] Fix retorno a depósito en optimizarRuta()
-- [ ] Mejora diseño PDF + logo empresa en factura (logoUrl ya existe en Storage)
+- [ ] Fix retorno a depósito en optimizarRuta() — camión no vuelve al origen
+- [ ] Mejora diseño PDF + logo empresa en factura (logoUrl existe en Storage, falta conectar)
 - [ ] Cloud Function de limpieza de datos (TTL)
-- [ ] Rate limiting chatbot con Firestore (hoy usa Map in-memory, escala mal)
 
 ---
 
 ## 📋 COMPLETADO — HISTÓRICO
+
+### Sesión 2026-05-04 (tarde) — Onboarding v2 + Chatbot fix + Sugerencias IA + Deploy
+- ✅ **OnboardingPage v2**: animaciones CSS slideIn entre pasos, paso 1 rediseñado con feature cards, paso 4 soporta hasta 3 productos (+ Agregar / ✕ Eliminar), validación actualizada, paso 5 con "Próximos pasos"
+- ✅ **Chatbot admin fix**: modelo cambiado a `claude-haiku-4-5-20251001`, rate limit 20/hora + 50/día (Firestore transaction), debug logs eliminados, contexto de rutas activas hoy incluido en prompt
+- ✅ **Cloud Function `sugerenciasRuta`**: callable HTTPS, lee paradas pendientes + clientes + transacciones 30d, llama Haiku con max_tokens 400, retorna JSON `[{clienteId, clienteNombre, prioridad, razon}]`
+- ✅ **SugerenciasIAPanel** (conductor-app): toggle persistido en AsyncStorage, cards horizontales scrolleables por prioridad (rojo/naranja/verde), colapsar/expandir, retry en error
+- ✅ **Integración RutaDelDiaScreen**: panel insertado entre barra de progreso y FlatList, pasa `rutaId` + `empresaId` (de `useAuth()`)
+- ✅ **Deploy functions**: `sugerenciasRuta` creada, `chatbotProcesarConsulta` actualizada — `firebase deploy --only functions` ✅
+- ✅ **Deploy hosting**: admin-web con onboarding v2 en https://rutapp-cfa16.web.app ✅
+
+### Sesión 2026-05-04 (mañana) — Email setup completado
+- ✅ Email semanal + mensual verificados con envío real
+- ✅ App Password Gmail configurada correctamente (sin espacios)
+- ✅ GCP Firestore Backup activado manualmente (30 días retención)
+- ✅ Secrets `EMAIL_USER`, `EMAIL_PASS`, `ANTHROPIC_API_KEY` confirmados en Secret Manager
 
 ### Sesión 2026-04-29
 **Fixes prioridad media/baja (sprint 2)**

@@ -288,3 +288,16 @@
   background: #FFFFFF;
   box-shadow: 0 0 0 3px rgba(22,147,165,0.10);
 }
+
+/* ── Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .pageTitle { font-size: 26px; margin-bottom: 16px; }
+  .card { padding: 18px; }
+  .gridWrap { margin: 0 -6px; }
+  .calTable { font-size: 12px; min-width: 520px; }
+  .calTable th, .calTable td { padding: 6px 4px; }
+  .cell { min-width: 64px; }
+  .cellBadge { font-size: 11px; }
+  .cellZona { font-size: 9px; }
+  .cargaItem { font-size: 11px; padding: 4px 9px; }
+}
