@@ -195,7 +195,7 @@ export default function DashboardPage() {
         </div>
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Camiones activos</div>
-          <div className={`${styles.statValue} ${styles.amber}`}>{stats.camionesActivos}</div>
+          <div className={`${styles.statValue} ${styles.accent}`}>{stats.camionesActivos}</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Paradas completadas</div>

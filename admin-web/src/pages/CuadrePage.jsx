@@ -192,7 +192,7 @@ export default function CuadrePage() {
                           <td>{prodName(pid)}</td>
                           <td>{salio}</td>
                           <td className={styles.green}>{vendido}</td>
-                          <td className={styles.amber}>{devuelto}</td>
+                          <td className={styles.accent}>{devuelto}</td>
                           <td>{salio - vendido - devuelto}</td>
                         </tr>
                       );

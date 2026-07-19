@@ -37,7 +37,7 @@ export default function AdminDashboard() {
           </div>
           <div className={styles.statCard}>
             <div className={styles.statLabel}>Camiones activos</div>
-            <div className={`${styles.statValue} ${styles.amber}`}>—</div>
+            <div className={`${styles.statValue} ${styles.accent}`}>—</div>
           </div>
           <div className={styles.statCard}>
             <div className={styles.statLabel}>Cuentas x cobrar</div>

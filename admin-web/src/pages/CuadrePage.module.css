@@ -124,7 +124,7 @@
 }
 
 .green { color: #2E7D6B; font-weight: 600; }
-.amber { color: #1693A5; font-weight: 600; }
+.accent { color: var(--teal); font-weight: 600; }
 .red   { color: #B84B4B; font-weight: 600; }
 
 .cobroGrid, .summaryGrid {

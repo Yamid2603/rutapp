@@ -129,5 +129,5 @@
 }
 
 .green { color: #2E7D6B; }
-.amber { color: #1693A5; }
+.accent { color: var(--teal); }
 .red   { color: #B84B4B; }

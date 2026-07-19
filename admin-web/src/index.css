@@ -2,47 +2,48 @@
 
 /* ── Design Tokens ─────────────────────────────────────────── */
 :root {
-  /* Palette — stays close to original */
-  --cream:        #F0F0D8;
-  --cream-light:  #F7F7EC;
-  --cream-border: #D8D8C0;
-  --teal:         #1693A5;
-  --teal-dark:    #0F7A8A;
-  --teal-dim:     rgba(22,147,165,0.10);
-  --navy:         #0D2433;
-  --navy-mid:     #1A3447;
-  --navy-subtle:  rgba(13,36,51,0.06);
+  /* Palette — "Agua Clara suave" (rediseño 2026-07). Nombres de vars se
+     conservan por compatibilidad: cream=bruma, teal=cian suave, navy=azul sereno */
+  --cream:        #F2F6F8;
+  --cream-light:  #F8FBFC;
+  --cream-border: #E1E9EE;
+  --teal:         #4699B2;
+  --teal-dark:    #3A809A;
+  --teal-dim:     rgba(70,153,178,0.10);
+  --navy:         #1C3A52;
+  --navy-mid:     #2A5270;
+  --navy-subtle:  rgba(28,58,82,0.06);
 
   /* Text */
-  --text-primary:   #1a1a1a;
-  --text-secondary: #5a5a5a;
-  --text-muted:     #8B949E;
-  --text-on-navy:   #E8EDF2;
+  --text-primary:   #22333F;
+  --text-secondary: #52626E;
+  --text-muted:     #7E8E99;
+  --text-on-navy:   #D6E3EC;
   --text-on-teal:   #ffffff;
 
   /* Semantic */
-  --success:     #2E7D6B;
-  --success-bg:  rgba(46,125,107,0.10);
-  --danger:      #B84B4B;
-  --danger-bg:   rgba(184,75,75,0.10);
-  --warning:     #C07B2A;
-  --warning-bg:  rgba(192,123,42,0.10);
+  --success:     #3D8873;
+  --success-bg:  rgba(61,136,115,0.10);
+  --danger:      #B96A6A;
+  --danger-bg:   rgba(185,106,106,0.10);
+  --warning:     #BC8F45;
+  --warning-bg:  rgba(188,143,69,0.12);
 
   /* Surface */
   --surface:        #FFFFFF;
   --surface-raised: #FFFFFF;
-  --bg-page:        #F0F0D8;
+  --bg-page:        #F2F6F8;
 
   /* Elevation */
-  --shadow-sm:  0 1px 4px rgba(13,36,51,0.06);
-  --shadow-md:  0 2px 12px rgba(13,36,51,0.08);
-  --shadow-lg:  0 8px 32px rgba(13,36,51,0.12);
+  --shadow-sm:  0 1px 4px rgba(28,58,82,0.06);
+  --shadow-md:  0 2px 12px rgba(28,58,82,0.08);
+  --shadow-lg:  0 8px 32px rgba(28,58,82,0.12);
 
-  /* Radius */
-  --radius-sm:  6px;
-  --radius-md:  10px;
-  --radius-lg:  14px;
-  --radius-xl:  18px;
+  /* Radius — amplios (dirección C) */
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
 
   /* Spacing */
   --gap-xs: 4px;

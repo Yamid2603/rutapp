@@ -58,7 +58,6 @@
 }
 
 .pct {
-  font-family: 'DM Sans', sans-serif;
   font-size: 14px;
   color: #8B949E;
   font-weight: 400;
@@ -66,7 +65,7 @@
 
 /* Semantic colors — muted, non-saturated */
 .green  { color: #2E7D6B; }
-.amber  { color: #1693A5; }
+.accent  { color: var(--teal); }
 .red    { color: #B84B4B; }
 
 .tagGreen, .tagRed, .tagAmber {
