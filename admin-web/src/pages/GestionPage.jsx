@@ -299,7 +299,7 @@ export default function GestionPage() {
         const rutasCam = rutas.filter(r => r.camionId === cam.id);
         const totalVentas = rutasCam.reduce((s, r) => s + (r.paradas || []).reduce((ps, p) => ps + (p.totalVenta || 0), 0), 0);
         const totalCobrado = rutasCam.reduce((s, r) => s + (r.paradas || []).reduce((ps, p) => ps + (p.totalCobrado || 0), 0), 0);
-        const totalGastos = rutasCam.reduce((s, r) => s + (r.gastos || []).reduce((g, x) => g + (x.monto || 0), 0), 0);
+        const totalGastos = rutasCam.reduce((s, r) => s + (r.gastos || []).reduce((g, x) => g + (x.monto ?? x.valor ?? 0), 0), 0);
         const clientesAtendidos = new Set(
           rutasCam.flatMap(r => (r.paradas || []).filter(p => p.estado === 'completado').map(p => p.clienteId))
         ).size;

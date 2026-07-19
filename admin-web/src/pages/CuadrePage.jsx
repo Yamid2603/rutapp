@@ -76,7 +76,7 @@ export default function CuadrePage() {
         });
 
         (r.gastos || []).forEach(g => {
-          totalGastos += g.monto || 0;
+          totalGastos += g.monto ?? g.valor ?? 0;
           gastosList.push(g);
         });
       });
@@ -217,8 +217,16 @@ export default function CuadrePage() {
                 <h4 className={styles.sectionTitle}>Gastos</h4>
                 {c.gastosList.length ? c.gastosList.map((g, i) => (
                   <div key={i} className={styles.gastoRow}>
-                    <span>{g.descripcion || 'Gasto'}</span>
-                    <span className={styles.red}>{money(g.monto)}</span>
+                    <span style={{ textTransform: 'capitalize' }}>
+                      {g.descripcion || g.tipo || 'Gasto'}{g.hora ? ` · ${g.hora}` : ''}
+                      {g.fotoUrl && (
+                        <a href={g.fotoUrl} target="_blank" rel="noreferrer"
+                           style={{ marginLeft: 8, color: 'var(--teal)', fontSize: 12 }}>
+                          Ver foto
+                        </a>
+                      )}
+                    </span>
+                    <span className={styles.red}>{money(g.monto ?? g.valor ?? 0)}</span>
                   </div>
                 )) : <p className={styles.noData}>Sin gastos</p>}
               </div>
