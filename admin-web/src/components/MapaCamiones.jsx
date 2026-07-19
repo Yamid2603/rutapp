@@ -59,7 +59,7 @@ export default function MapaCamiones({ rutas, camiones, clientes }) {
           icon: {
             path: google.maps.SymbolPath.CIRCLE,
             scale: 15,
-            fillColor: pos.estado === 'visitado' ? '#22C55E' : '#9CA3AF',
+            fillColor: pos.estado === 'visitado' ? '#3D8873' : '#7E8E99',
             fillOpacity: 1,
             strokeColor: '#FFFFFF',
             strokeWeight: 2,

@@ -21,9 +21,9 @@ export default function SeccionGastos({ datos, exportable }) {
         </h4>
         <div className={styles.barras}>
           {[
-            { cat: 'Gasolina', val: porCategoria.gasolina, color: '#F59E0B' },
+            { cat: 'Gasolina', val: porCategoria.gasolina, color: 'var(--warning)' },
             { cat: 'Peaje', val: porCategoria.peaje, color: '#8B5CF6' },
-            { cat: 'Mecánica', val: porCategoria.mecanica, color: '#10B981' },
+            { cat: 'Mecánica', val: porCategoria.mecanica, color: 'var(--success)' },
             { cat: 'Otro', val: porCategoria.otro, color: '#6B7280' },
           ].map((item) => (
             <div key={item.cat} style={{ marginBottom: 10 }}>

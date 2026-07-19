@@ -13,7 +13,7 @@
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 34px;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   letter-spacing: -0.5px;
   line-height: 1;
@@ -30,28 +30,28 @@
 .search {
   padding: 9px 14px;
   background: #FFFFFF;
-  border: 1px solid #D8D8C0;
+  border: 1px solid var(--cream-border);
   border-radius: 8px;
   font-size: 13px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   outline: none;
   width: 200px;
   transition: border-color 0.15s, box-shadow 0.15s;
   font-family: inherit;
 }
 .search:focus {
-  border-color: #1693A5;
-  box-shadow: 0 0 0 3px rgba(22,147,165,0.10);
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(70,153,178,0.10);
 }
 .search::placeholder { color: #B0B8C1; }
 
 /* Table card */
 .card {
   background: #FFFFFF;
-  border: 1px solid rgba(13,36,51,0.06);
+  border: 1px solid rgba(28,58,82,0.06);
   border-radius: 16px;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+  box-shadow: 0 2px 8px rgba(28,58,82,0.08), 0 8px 24px rgba(28,58,82,0.05);
   overflow: hidden;
 }
 
@@ -66,26 +66,26 @@
   padding: 12px 16px;
   font-size: 10.5px;
   font-weight: 700;
-  color: #8B949E;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.7px;
-  border-bottom: 1px solid #EFEFDF;
-  background: #FAFAF5;
+  border-bottom: 1px solid var(--cream-light);
+  background: var(--cream-light);
 }
 
 .table td {
   padding: 12px 16px;
-  color: #1a1a1a;
-  border-bottom: 1px solid #EFEFDF;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--cream-light);
 }
 .table tr:last-child td { border-bottom: none; }
-.table tr:hover td { background: #FAFAF5; }
+.table tr:hover td { background: var(--cream-light); }
 
 .bold   { font-weight: 600; }
-.muted  { color: #8B949E; }
-.red    { color: #B84B4B; font-weight: 600; }
-.green  { color: #2E7D6B; font-weight: 600; }
-.empty  { text-align: center; color: #8B949E; padding: 36px !important; }
+.muted  { color: var(--text-muted); }
+.red    { color: var(--danger); font-weight: 600; }
+.green  { color: var(--success); font-weight: 600; }
+.empty  { text-align: center; color: var(--text-muted); padding: 36px !important; }
 
 .editBtn {
   background: none;
@@ -97,7 +97,7 @@
   opacity: 0.65;
   transition: background 0.15s, opacity 0.15s;
 }
-.editBtn:hover { background: #F0F0D8; opacity: 1; }
+.editBtn:hover { background: var(--cream); opacity: 1; }
 
 /* Price grid inside modal */
 .priceGrid {
@@ -113,8 +113,8 @@
   border-radius: 20px;
   font-size: 11px;
   font-weight: 700;
-  background: rgba(22,147,165,0.10);
-  color: #1693A5;
+  background: rgba(70,153,178,0.10);
+  color: var(--teal);
 }
 
 /* ── Mobile ─────────────────────────────────────────────────── */

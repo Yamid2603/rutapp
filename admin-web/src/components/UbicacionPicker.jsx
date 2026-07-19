@@ -133,7 +133,7 @@ export default function UbicacionPicker({ lat, lng, onSelect }) {
               onClick={() => setAbierto(true)}
               style={{
                 fontSize: 12, padding: '4px 12px', borderRadius: 8,
-                border: '1px solid #D8D8C0', background: '#F8F8F0',
+                border: '1px solid var(--cream-border)', background: '#F8F8F0',
                 cursor: 'pointer', color: '#374151',
               }}
             >
@@ -146,7 +146,7 @@ export default function UbicacionPicker({ lat, lng, onSelect }) {
             onClick={() => setAbierto(true)}
             style={{
               fontSize: 13, padding: '8px 16px', borderRadius: 10,
-              border: '1px solid #D8D8C0', background: '#F8F8F0',
+              border: '1px solid var(--cream-border)', background: '#F8F8F0',
               cursor: 'pointer', color: '#374151', width: '100%', textAlign: 'left',
             }}
           >
@@ -159,7 +159,7 @@ export default function UbicacionPicker({ lat, lng, onSelect }) {
 
   return (
     <div style={{
-      border: '1px solid #D8D8C0', borderRadius: 12,
+      border: '1px solid var(--cream-border)', borderRadius: 12,
       background: '#F8F8F0', padding: 12, display: 'flex', flexDirection: 'column', gap: 10,
     }}>
       <button
@@ -167,7 +167,7 @@ export default function UbicacionPicker({ lat, lng, onSelect }) {
         onClick={usarMiUbicacion}
         style={{
           alignSelf: 'flex-start', fontSize: 13, padding: '6px 14px', borderRadius: 8,
-          border: '1px solid #D8D8C0', background: '#fff', cursor: 'pointer', color: '#374151',
+          border: '1px solid var(--cream-border)', background: '#fff', cursor: 'pointer', color: '#374151',
         }}
       >
         📍 Usar mi ubicación
@@ -191,7 +191,7 @@ export default function UbicacionPicker({ lat, lng, onSelect }) {
         placeholder="Selecciona un punto en el mapa"
         style={{
           width: '100%', padding: '7px 10px', borderRadius: 8,
-          border: '1px solid #D8D8C0', background: '#fff', fontSize: 13,
+          border: '1px solid var(--cream-border)', background: '#fff', fontSize: 13,
           color: '#374151', boxSizing: 'border-box',
         }}
       />
@@ -202,7 +202,7 @@ export default function UbicacionPicker({ lat, lng, onSelect }) {
           onClick={cancelar}
           style={{
             fontSize: 13, padding: '6px 14px', borderRadius: 8,
-            border: '1px solid #D8D8C0', background: '#fff', cursor: 'pointer', color: '#6B7280',
+            border: '1px solid var(--cream-border)', background: '#fff', cursor: 'pointer', color: '#6B7280',
           }}
         >
           Cancelar

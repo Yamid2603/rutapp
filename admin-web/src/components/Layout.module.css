@@ -3,7 +3,7 @@
 .layout {
   display: flex;
   min-height: 100vh;
-  background: #F0F0D8;
+  background: var(--cream);
 }
 
 .main {
@@ -27,7 +27,7 @@
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 34px;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   letter-spacing: -0.5px;
   line-height: 1;
@@ -35,7 +35,7 @@
 
 .pageSubtitle {
   font-size: 13px;
-  color: #8B949E;
+  color: var(--text-muted);
   margin: 4px 0 0;
   font-weight: 400;
 }
@@ -61,7 +61,7 @@
     top: 0; left: 0; right: 0;
     height: 54px;
     padding: 0 12px;
-    background: #0D2433;
+    background: var(--navy);
     z-index: 200;
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }

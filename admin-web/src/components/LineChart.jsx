@@ -16,12 +16,12 @@ export default function LineChart({ data, labels, height = 160 }) {
         <polyline
           points={polyline}
           fill="none"
-          stroke="#F59E0B"
+          stroke="var(--warning)"
           strokeWidth="2"
           vectorEffect="non-scaling-stroke"
         />
         {points.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="1.5" fill="#F59E0B">
+          <circle key={i} cx={p.x} cy={p.y} r="1.5" fill="var(--warning)">
             <title>{money(p.val)}</title>
           </circle>
         ))}

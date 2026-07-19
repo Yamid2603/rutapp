@@ -4,7 +4,7 @@
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 34px;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0 0 28px;
   letter-spacing: -0.5px;
 }
@@ -12,10 +12,10 @@
 /* ── Card ───────────────────────────────────────────────────── */
 .card {
   background: #FFFFFF;
-  border: 1px solid rgba(13,36,51,0.06);
+  border: 1px solid rgba(28,58,82,0.06);
   border-radius: 16px;
   padding: 28px;
-  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+  box-shadow: 0 2px 8px rgba(28,58,82,0.08), 0 8px 24px rgba(28,58,82,0.05);
   margin-bottom: 20px;
 }
 
@@ -30,7 +30,7 @@
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 17px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   letter-spacing: 0.2px;
 }
@@ -47,25 +47,25 @@
   padding: 8px 12px;
   font-size: 10.5px;
   font-weight: 700;
-  color: #8B949E;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.7px;
-  border-bottom: 1px solid #EFEFDF;
+  border-bottom: 1px solid var(--cream-light);
 }
 
 .table td {
   padding: 11px 12px;
-  color: #1a1a1a;
-  border-bottom: 1px solid #EFEFDF;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--cream-light);
 }
 .table tr:last-child td { border-bottom: none; }
-.table tr:hover td { background: #FAFAF5; }
+.table tr:hover td { background: var(--cream-light); }
 
 .bold   { font-weight: 600; }
-.muted  { color: #8B949E; }
-.red    { color: #B84B4B; font-weight: 600; }
-.green  { color: #2E7D6B; font-weight: 600; }
-.empty  { text-align: center; color: #8B949E; padding: 24px !important; }
+.muted  { color: var(--text-muted); }
+.red    { color: var(--danger); font-weight: 600; }
+.green  { color: var(--success); font-weight: 600; }
+.empty  { text-align: center; color: var(--text-muted); padding: 24px !important; }
 
 .actionCell { text-align: right; white-space: nowrap; }
 
@@ -79,7 +79,7 @@
   transition: background 0.15s;
   opacity: 0.7;
 }
-.iconBtn:hover { background: #F0F0D8; opacity: 1; }
+.iconBtn:hover { background: var(--cream); opacity: 1; }
 
 .wapBtn {
   display: inline-block;
@@ -90,7 +90,7 @@
   opacity: 0.7;
   transition: background 0.15s, opacity 0.15s;
 }
-.wapBtn:hover { background: #F0F0D8; opacity: 1; }
+.wapBtn:hover { background: var(--cream); opacity: 1; }
 
 /* ── Export grid ────────────────────────────────────────────── */
 .exportGrid {
@@ -102,10 +102,10 @@
 
 .exportBtn {
   padding: 16px 18px;
-  border: 1px solid #E8E8D0;
+  border: 1px solid var(--cream-border);
   border-radius: 12px;
-  background: #FAFAF5;
-  color: #1a1a1a;
+  background: var(--cream-light);
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -116,9 +116,9 @@
 }
 
 .exportBtn:hover {
-  background: #F0F0D8;
-  border-color: #1693A5;
-  box-shadow: 0 2px 8px rgba(22,147,165,0.10);
+  background: var(--cream);
+  border-color: var(--teal);
+  box-shadow: 0 2px 8px rgba(70,153,178,0.10);
 }
 
 /* ── Config grid ────────────────────────────────────────────── */
@@ -131,8 +131,8 @@
 
 /* ── Warning banner ─────────────────────────────────────────── */
 .warning {
-  background: rgba(192,123,42,0.08);
-  border: 1px solid rgba(192,123,42,0.25);
+  background: rgba(188,143,69,0.08);
+  border: 1px solid rgba(188,143,69,0.25);
   border-radius: 8px;
   padding: 10px 14px;
   font-size: 13px;
@@ -146,7 +146,7 @@
 .logoLabel {
   font-size: 10.5px;
   font-weight: 700;
-  color: #8B949E;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.9px;
   margin-bottom: 10px;
@@ -164,23 +164,23 @@
   height: 72px;
   object-fit: contain;
   border-radius: 10px;
-  border: 1px solid #E8E8D0;
-  background: #FAFAF5;
+  border: 1px solid var(--cream-border);
+  background: var(--cream-light);
   padding: 4px;
 }
 
 .logoUploadBtn {
   padding: 8px 16px;
-  background: #FAFAF5;
-  border: 1px dashed #D8D8C0;
+  background: var(--cream-light);
+  border: 1px dashed var(--cream-border);
   border-radius: 8px;
   font-size: 13px;
-  color: #5a5a5a;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
   font-family: inherit;
 }
-.logoUploadBtn:hover { border-color: #1693A5; color: #1693A5; }
+.logoUploadBtn:hover { border-color: var(--teal); color: var(--teal); }
 
 /* ── Mobile ─────────────────────────────────────────────────── */
 @media (max-width: 900px) {

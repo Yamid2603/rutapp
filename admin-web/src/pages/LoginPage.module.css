@@ -2,7 +2,7 @@
 
 .container {
   min-height: 100vh;
-  background: #0D2433;
+  background: var(--navy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,7 +20,7 @@
   width: 480px;
   height: 480px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(22,147,165,0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(70,153,178,0.12) 0%, transparent 70%);
   pointer-events: none;
 }
 .container::after {
@@ -31,7 +31,7 @@
   width: 320px;
   height: 320px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(22,147,165,0.07) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(70,153,178,0.07) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -39,7 +39,7 @@
   width: 100%;
   max-width: 400px;
   background: #FFFFFF;
-  border: 1px solid #E8E8D0;
+  border: 1px solid var(--cream-border);
   border-radius: 20px;
   padding: 44px 36px 36px;
   box-shadow: 0 32px 64px rgba(0,0,0,0.28);
@@ -65,7 +65,7 @@
 
 .logoSub {
   font-size: 11px;
-  color: #8B949E;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1.5px;
   font-weight: 600;
@@ -87,17 +87,17 @@
 .label {
   font-size: 10.5px;
   font-weight: 700;
-  color: #8B949E;
+  color: var(--text-muted);
   letter-spacing: 0.9px;
   text-transform: uppercase;
 }
 
 .input {
   padding: 12px 14px;
-  background: #F7F7EE;
-  border: 1px solid #D8D8C0;
+  background: var(--cream-light);
+  border: 1px solid var(--cream-border);
   border-radius: 10px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   font-size: 15px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
@@ -105,33 +105,33 @@
 }
 
 .input:focus {
-  border-color: #1693A5;
+  border-color: var(--teal);
   background: #FFFFFF;
-  box-shadow: 0 0 0 3px rgba(22,147,165,0.12);
+  box-shadow: 0 0 0 3px rgba(70,153,178,0.12);
 }
 
 .input::placeholder { color: #B0B8C1; }
 
 /* Error / Success */
 .error {
-  color: #B84B4B;
+  color: var(--danger);
   font-size: 13px;
   text-align: center;
   margin: 0;
   padding: 9px 12px;
-  background: rgba(184,75,75,0.08);
+  background: rgba(185,106,106,0.08);
   border-radius: 8px;
-  border: 1px solid rgba(184,75,75,0.22);
+  border: 1px solid rgba(185,106,106,0.22);
 }
 
 .success {
-  color: #2E7D6B;
+  color: var(--success);
   font-size: 13px;
   text-align: center;
   padding: 9px 12px;
-  background: rgba(46,125,107,0.08);
+  background: rgba(61,136,115,0.08);
   border-radius: 8px;
-  border: 1px solid rgba(46,125,107,0.22);
+  border: 1px solid rgba(61,136,115,0.22);
   margin: 0;
 }
 
@@ -139,7 +139,7 @@
 .button {
   margin-top: 4px;
   padding: 14px;
-  background: #1693A5;
+  background: var(--teal);
   color: #FFFFFF;
   border: none;
   border-radius: 10px;
@@ -148,13 +148,13 @@
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 10px rgba(22,147,165,0.30);
+  box-shadow: 0 2px 10px rgba(70,153,178,0.30);
   font-family: inherit;
 }
 
 .button:hover:not(:disabled) {
-  background: #0F7A8A;
-  box-shadow: 0 4px 16px rgba(22,147,165,0.40);
+  background: var(--teal-dark);
+  box-shadow: 0 4px 16px rgba(70,153,178,0.40);
 }
 
 .button:disabled {
@@ -184,14 +184,14 @@
 .forgotBtn {
   background: none;
   border: none;
-  color: #8B949E;
+  color: var(--text-muted);
   font-size: 12.5px;
   cursor: pointer;
   text-decoration: none;
   font-family: inherit;
   transition: color 0.15s;
 }
-.forgotBtn:hover { color: #1693A5; }
+.forgotBtn:hover { color: var(--teal); }
 
 /* Divider */
 .divider {
@@ -207,7 +207,7 @@
   content: '';
   flex: 1;
   height: 1px;
-  background: #E8E8D0;
+  background: var(--cream-border);
 }
 
 /* Google Button */
@@ -219,18 +219,18 @@
   gap: 10px;
   padding: 12px;
   background: #FFFFFF;
-  border: 1px solid #D8D8C0;
+  border: 1px solid var(--cream-border);
   border-radius: 10px;
   font-size: 14px;
   font-weight: 500;
-  color: #1a1a1a;
+  color: var(--text-primary);
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
   font-family: inherit;
 }
 .googleButton:hover:not(:disabled) {
-  border-color: #1693A5;
-  box-shadow: 0 0 0 3px rgba(22,147,165,0.10);
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(70,153,178,0.10);
 }
 .googleButton:disabled {
   opacity: 0.6;

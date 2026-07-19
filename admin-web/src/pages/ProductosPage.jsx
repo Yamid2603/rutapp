@@ -99,10 +99,10 @@ export default function ProductosPage() {
               <tr key={p.id}>
                 <td className={styles.emoji}>{EMOJIS[i % EMOJIS.length]}</td>
                 <td className={styles.bold}>{p.nombre}</td>
-                <td style={{ color: p.precioBase > 0 ? '#1693A5' : '#8B949E', fontSize: 13 }}>
+                <td style={{ color: p.precioBase > 0 ? 'var(--teal)' : '#8B949E', fontSize: 13 }}>
                   {p.precioBase > 0 ? `$${Number(p.precioBase).toLocaleString('es-CO')}` : '—'}
                 </td>
-                <td style={{ textAlign: 'center', fontSize: 13, color: p.retornable ? '#2E7D6B' : '#8B949E' }}>
+                <td style={{ textAlign: 'center', fontSize: 13, color: p.retornable ? 'var(--success)' : '#8B949E' }}>
                   {p.retornable ? '♻️ Sí' : '—'}
                 </td>
                 <td>

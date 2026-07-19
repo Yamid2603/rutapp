@@ -15,7 +15,7 @@
 
 .label {
   font-size: 10.5px;
-  color: #8B949E;
+  color: var(--text-muted);
   font-weight: 500;
   letter-spacing: 0.2px;
 }

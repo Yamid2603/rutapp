@@ -15,9 +15,9 @@ export default function SemaforoResumen({ eficiencia, riesgo, gastos, alertas })
   }, [eficiencia, riesgo, gastos, alertas]);
 
   const getSemaforoColor = (ratio) => {
-    if (ratio >= 85) return '#10B981';
-    if (ratio >= 70) return '#F59E0B';
-    return '#EF4444';
+    if (ratio >= 85) return 'var(--success)';
+    if (ratio >= 70) return 'var(--warning)';
+    return 'var(--danger)';
   };
 
   return (
@@ -56,7 +56,7 @@ export default function SemaforoResumen({ eficiencia, riesgo, gastos, alertas })
         <div className={styles.contenido}>
           <div
             className={styles.numero}
-            style={{ color: stats.alertasAltas > 0 ? '#EF4444' : '#10B981' }}
+            style={{ color: stats.alertasAltas > 0 ? 'var(--danger)' : 'var(--success)' }}
           >
             {stats.alertasAltas}
           </div>

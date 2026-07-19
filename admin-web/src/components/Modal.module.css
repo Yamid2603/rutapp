@@ -3,7 +3,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(13,36,51,0.55);
+  background: rgba(28,58,82,0.55);
   backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
@@ -14,14 +14,14 @@
 
 .modal {
   background: #FFFFFF;
-  border: 1px solid #E8E8D0;
+  border: 1px solid var(--cream-border);
   border-radius: 16px;
   width: 100%;
   max-width: 480px;
   max-height: 88vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 24px 48px rgba(13,36,51,0.16);
+  box-shadow: 0 24px 48px rgba(28,58,82,0.16);
 }
 
 .wide { max-width: 660px; }
@@ -31,14 +31,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 18px 22px 16px;
-  border-bottom: 1px solid #EFEFDF;
+  border-bottom: 1px solid var(--cream-light);
 }
 
 .title {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   letter-spacing: 0.2px;
 }
@@ -46,7 +46,7 @@
 .close {
   background: none;
   border: none;
-  color: #8B949E;
+  color: var(--text-muted);
   font-size: 20px;
   cursor: pointer;
   padding: 4px;
@@ -55,8 +55,8 @@
   line-height: 1;
 }
 .close:hover {
-  color: #1a1a1a;
-  background: #F0F0D8;
+  color: var(--text-primary);
+  background: var(--cream);
 }
 
 .body {

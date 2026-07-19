@@ -9,17 +9,17 @@
 .label {
   font-size: 10.5px;
   font-weight: 700;
-  color: #8B949E;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.8px;
 }
 
 .input {
   padding: 10px 13px;
-  background: #FAFAF5;
-  border: 1px solid #D8D8C0;
+  background: var(--cream-light);
+  border: 1px solid var(--cream-border);
   border-radius: 8px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   font-size: 14px;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
@@ -27,9 +27,9 @@
 }
 
 .input:focus {
-  border-color: #1693A5;
+  border-color: var(--teal);
   background: #FFFFFF;
-  box-shadow: 0 0 0 3px rgba(22,147,165,0.10);
+  box-shadow: 0 0 0 3px rgba(70,153,178,0.10);
 }
 
 .input::placeholder { color: #B0B8C1; }
@@ -60,15 +60,15 @@ select.input {
 
 /* Primary — solid teal */
 .primary {
-  background: #1693A5;
+  background: var(--teal);
   color: #FFFFFF;
-  border-color: #1693A5;
-  box-shadow: 0 1px 3px rgba(22,147,165,0.25);
+  border-color: var(--teal);
+  box-shadow: 0 1px 3px rgba(70,153,178,0.25);
 }
 .primary:hover:not(:disabled) {
-  background: #0F7A8A;
-  border-color: #0F7A8A;
-  box-shadow: 0 2px 8px rgba(22,147,165,0.35);
+  background: var(--teal-dark);
+  border-color: var(--teal-dark);
+  box-shadow: 0 2px 8px rgba(70,153,178,0.35);
 }
 .primary:disabled {
   opacity: 0.55;
@@ -78,23 +78,23 @@ select.input {
 /* Secondary — outlined */
 .secondary {
   background: transparent;
-  color: #5a5a5a;
-  border-color: #D8D8C0;
+  color: var(--text-secondary);
+  border-color: var(--cream-border);
 }
 .secondary:hover:not(:disabled) {
-  border-color: #1693A5;
-  color: #1a1a1a;
-  background: rgba(22,147,165,0.04);
+  border-color: var(--teal);
+  color: var(--text-primary);
+  background: rgba(70,153,178,0.04);
 }
 .secondary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Danger */
 .danger {
   background: transparent;
-  color: #B84B4B;
-  border-color: #B84B4B;
+  color: var(--danger);
+  border-color: var(--danger);
 }
 .danger:hover:not(:disabled) {
-  background: rgba(184,75,75,0.08);
+  background: rgba(185,106,106,0.08);
 }
 .danger:disabled { opacity: 0.5; cursor: not-allowed; }

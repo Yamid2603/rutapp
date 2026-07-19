@@ -180,7 +180,7 @@ export default function ClientesPage() {
                 style={{ width: 56, height: 56, borderRadius: 28, objectFit: 'cover', border: '2px solid #E8E8D0' }}
               />
             )}
-            <label style={{ cursor: 'pointer', padding: '7px 14px', background: '#F0F0D8', border: '1px solid #D8D8C0', borderRadius: 8, fontSize: 13, color: '#374151' }}>
+            <label style={{ cursor: 'pointer', padding: '7px 14px', background: 'var(--cream)', border: '1px solid var(--cream-border)', borderRadius: 8, fontSize: 13, color: '#374151' }}>
               {fotoPreview ? '📷 Cambiar foto' : form.fotoUrl ? '📷 Reemplazar foto' : '📷 Subir foto'}
               <input type="file" accept="image/*" onChange={handleFotoChange} style={{ display: 'none' }} />
             </label>

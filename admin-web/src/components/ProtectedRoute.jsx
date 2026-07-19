@@ -12,7 +12,7 @@ export default function ProtectedRoute({ children }) {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#F59E0B',
+        color: 'var(--warning)',
         fontSize: 18,
       }}>
         Cargando...

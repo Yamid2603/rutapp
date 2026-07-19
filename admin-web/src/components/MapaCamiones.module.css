@@ -4,7 +4,7 @@
   width: 100%;
   height: 360px;
   border-radius: 12px;
-  border: 1px solid #E8E8D0;
+  border: 1px solid var(--cream-border);
   overflow: hidden;
 }
 
@@ -17,10 +17,10 @@
   width: 100%;
   padding: 28px;
   text-align: center;
-  color: #8B949E;
+  color: var(--text-muted);
   font-size: 14px;
-  background: #FAFAF5;
-  border: 1px dashed #D8D8C0;
+  background: var(--cream-light);
+  border: 1px dashed var(--cream-border);
   border-radius: 12px;
 }
 
@@ -28,9 +28,9 @@
   width: 100%;
   padding: 52px;
   text-align: center;
-  color: #8B949E;
+  color: var(--text-muted);
   font-size: 14px;
-  background: #FAFAF5;
-  border: 1px dashed #D8D8C0;
+  background: var(--cream-light);
+  border: 1px dashed var(--cream-border);
   border-radius: 12px;
 }

@@ -127,7 +127,7 @@ export default function LoginPage() {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 12 }}>
-          <Link to="/onboarding" style={{ fontSize: 13, color: '#1693A5', textDecoration: 'none', fontWeight: 500 }}>
+          <Link to="/onboarding" style={{ fontSize: 13, color: 'var(--teal)', textDecoration: 'none', fontWeight: 500 }}>
             ¿Eres nuevo? Registra tu empresa →
           </Link>
         </div>

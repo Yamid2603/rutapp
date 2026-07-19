@@ -14,9 +14,9 @@
   margin-bottom: 28px;
   padding: 24px 28px;
   background: #FFFFFF;
-  border: 1px solid rgba(13,36,51,0.06);
+  border: 1px solid rgba(28,58,82,0.06);
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+  box-shadow: 0 2px 8px rgba(28,58,82,0.08), 0 8px 24px rgba(28,58,82,0.05);
 }
 
 .pageHeader h1 {
@@ -24,7 +24,7 @@
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 28px;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-primary);
   letter-spacing: -0.3px;
 }
 
@@ -34,15 +34,15 @@
   align-items: center;
   height: 400px;
   font-size: 14px;
-  color: #8B949E;
+  color: var(--text-muted);
 }
 
 .errorBanner {
-  background: rgba(184,75,75,0.08);
+  background: rgba(185,106,106,0.08);
   color: #7A2F2F;
   padding: 16px 20px;
   border-radius: 10px;
-  border: 1px solid rgba(184,75,75,0.22);
+  border: 1px solid rgba(185,106,106,0.22);
   margin-bottom: 24px;
   font-size: 13.5px;
   line-height: 1.5;
@@ -51,7 +51,7 @@
 .errorBanner strong {
   display: block;
   margin-bottom: 6px;
-  color: #B84B4B;
+  color: var(--danger);
   font-size: 14px;
 }
 

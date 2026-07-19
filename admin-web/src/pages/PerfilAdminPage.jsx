@@ -96,7 +96,7 @@ export default function PerfilAdminPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
           <div style={{
             width: 64, height: 64, borderRadius: 32,
-            background: '#0D2433', color: '#fff',
+            background: 'var(--navy)', color: '#fff',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 24, fontWeight: 700,
           }}>
@@ -105,7 +105,7 @@ export default function PerfilAdminPage() {
           <div>
             <div style={{ fontWeight: 700, fontSize: 16, color: '#1a1a1a' }}>{form.nombre || '—'}</div>
             <div style={{ fontSize: 13, color: '#8B949E' }}>{form.email}</div>
-            <div style={{ fontSize: 12, color: '#1693A5', marginTop: 2 }}>Empresa: {empresa || '—'}</div>
+            <div style={{ fontSize: 12, color: 'var(--teal)', marginTop: 2 }}>Empresa: {empresa || '—'}</div>
           </div>
         </div>
 
@@ -158,8 +158,8 @@ export default function PerfilAdminPage() {
               onChange={e => setPassForm({ ...passForm, confirmar: e.target.value })}
             />
           </div>
-          {passError && <p style={{ color: '#B84B4B', fontSize: 13, marginTop: 8 }}>{passError}</p>}
-          {passMsg && <p style={{ color: '#2E7D6B', fontSize: 13, marginTop: 8 }}>{passMsg}</p>}
+          {passError && <p style={{ color: 'var(--danger)', fontSize: 13, marginTop: 8 }}>{passError}</p>}
+          {passMsg && <p style={{ color: 'var(--success)', fontSize: 13, marginTop: 8 }}>{passMsg}</p>}
           <div style={{ marginTop: 14 }}>
             <Btn onClick={handleCambiarPassword} disabled={savingPass || !passForm.actual || !passForm.nueva}>
               {savingPass ? 'Cambiando...' : 'Cambiar contraseña'}
@@ -188,7 +188,7 @@ export default function PerfilAdminPage() {
           style={{
             padding: '10px 18px',
             background: '#FFFFFF',
-            color: '#B84B4B',
+            color: 'var(--danger)',
             border: '1.5px solid rgba(184,75,75,0.40)',
             borderRadius: 8,
             fontSize: 13,

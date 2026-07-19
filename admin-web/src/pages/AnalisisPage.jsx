@@ -52,8 +52,8 @@ export default function AnalisisPage() {
               style={{
                 padding: '8px 14px',
                 borderRadius: 6,
-                border: periodo === p.key ? '2px solid #1693A5' : '1px solid #D8D8C0',
-                background: periodo === p.key ? '#1693A5' : 'white',
+                border: periodo === p.key ? '2px solid var(--teal)' : '1px solid var(--cream-border)',
+                background: periodo === p.key ? 'var(--teal)' : 'white',
                 color: periodo === p.key ? 'white' : '#1a1a1a',
                 cursor: 'pointer',
                 fontSize: 13,
@@ -69,14 +69,14 @@ export default function AnalisisPage() {
                 type="date"
                 value={customInicio ? customInicio.toISOString().split('T')[0] : ''}
                 onChange={e => setCustomInicio(e.target.value ? new Date(e.target.value) : null)}
-                style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid #D8D8C0', fontSize: 13 }}
+                style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--cream-border)', fontSize: 13 }}
               />
               <span style={{ color: '#8B949E', fontSize: 13 }}>→</span>
               <input
                 type="date"
                 value={customFin ? customFin.toISOString().split('T')[0] : ''}
                 onChange={e => setCustomFin(e.target.value ? new Date(e.target.value) : null)}
-                style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid #D8D8C0', fontSize: 13 }}
+                style={{ padding: '7px 10px', borderRadius: 6, border: '1px solid var(--cream-border)', fontSize: 13 }}
               />
             </>
           )}

@@ -102,7 +102,7 @@ const styles = {
   },
   toast: {
     pointerEvents: 'auto',
-    background: '#0D2433',
+    background: 'var(--navy)',
     color: '#fff',
     borderRadius: 14,
     padding: '12px 14px 12px 18px',
@@ -118,7 +118,7 @@ const styles = {
   title: { fontSize: 14, fontWeight: 700, letterSpacing: 0.2 },
   sub: { fontSize: 12, opacity: 0.7, marginTop: 2 },
   btn: {
-    background: '#1693A5',
+    background: 'var(--teal)',
     color: '#fff',
     border: 0,
     borderRadius: 10,

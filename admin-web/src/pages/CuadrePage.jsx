@@ -107,9 +107,9 @@ export default function CuadrePage() {
   }, [byCamion]);
 
   const pagosSegments = useMemo(() => [
-    { label: 'Efectivo', value: totals.efectivo, color: '#22C55E' },
-    { label: 'Transferencia', value: totals.transferencia, color: '#1693A5' },
-    { label: 'Empresa', value: totals.empresa, color: '#F59E0B' },
+    { label: 'Efectivo', value: totals.efectivo, color: 'var(--success)' },
+    { label: 'Transferencia', value: totals.transferencia, color: 'var(--teal)' },
+    { label: 'Empresa', value: totals.empresa, color: 'var(--warning)' },
   ], [totals]);
 
   function prodName(pid) {

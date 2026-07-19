@@ -32,7 +32,7 @@
   width: 72%;
   max-width: 44px;
   min-height: 4px;
-  background: linear-gradient(180deg, #1693A5 0%, #0F7A8A 100%);
+  background: linear-gradient(180deg, var(--teal) 0%, var(--teal-dark) 100%);
   border-radius: 6px 6px 0 0;
   transition: height 0.35s ease, opacity 0.2s;
   cursor: pointer;
@@ -44,7 +44,7 @@
 
 .label {
   font-size: 10.5px;
-  color: #8B949E;
+  color: var(--text-muted);
   margin-top: 8px;
   text-transform: capitalize;
   font-weight: 500;

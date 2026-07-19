@@ -33,7 +33,7 @@ export default function SeccionOportunidades({ datos, exportable }) {
                   <td className={styles.nombre}>{o.clienteNombre}</td>
                   <td>${(o.compraHace3Meses / 1000).toFixed(0)}k</td>
                   <td>${(o.compraAhora / 1000).toFixed(0)}k</td>
-                  <td style={{ color: '#EF4444' }}>{o.cambioPercent.toFixed(0)}%</td>
+                  <td style={{ color: 'var(--danger)' }}>{o.cambioPercent.toFixed(0)}%</td>
                 </tr>
               ))}
             </tbody>
@@ -61,7 +61,7 @@ export default function SeccionOportunidades({ datos, exportable }) {
                   <td className={styles.nombre}>{o.clienteNombre}</td>
                   <td>{o.percentajePago.toFixed(0)}%</td>
                   <td>${(o.compraPromedio / 1000).toFixed(0)}k</td>
-                  <td style={{ color: '#10B981' }}>${(o.potencial / 1000).toFixed(0)}k</td>
+                  <td style={{ color: 'var(--success)' }}>${(o.potencial / 1000).toFixed(0)}k</td>
                 </tr>
               ))}
             </tbody>

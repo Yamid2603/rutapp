@@ -331,9 +331,9 @@ export default function ZonasPage() {
         </div>
 
         {confirmarEliminar && (
-          <div style={{ background: '#FEE2E2', border: '1px solid #B84B4B', borderRadius: 8, padding: 12, marginTop: 16 }}>
-            <div style={{ color: '#B84B4B', fontWeight: 700, marginBottom: 4 }}>⚠️ ¿Eliminar esta ruta?</div>
-            <div style={{ color: '#B84B4B', fontSize: 13, marginBottom: 12 }}>
+          <div style={{ background: '#FEE2E2', border: '1px solid var(--danger)', borderRadius: 8, padding: 12, marginTop: 16 }}>
+            <div style={{ color: 'var(--danger)', fontWeight: 700, marginBottom: 4 }}>⚠️ ¿Eliminar esta ruta?</div>
+            <div style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 12 }}>
               Se eliminará la asignación. Las transacciones ya registradas no se afectan.
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
@@ -341,7 +341,7 @@ export default function ZonasPage() {
               <button
                 onClick={handleEliminar}
                 disabled={deleting}
-                style={{ background: '#B84B4B', color: 'white', border: 'none', borderRadius: 6, padding: '8px 16px', fontWeight: 600, cursor: 'pointer', fontSize: 14 }}
+                style={{ background: 'var(--danger)', color: 'white', border: 'none', borderRadius: 6, padding: '8px 16px', fontWeight: 600, cursor: 'pointer', fontSize: 14 }}
               >
                 {deleting ? 'Eliminando...' : 'Confirmar'}
               </button>
@@ -354,7 +354,7 @@ export default function ZonasPage() {
             {cell?.ruta && paradasVisitadas.length === 0 && !confirmarEliminar && (
               <button
                 onClick={() => setConfirmarEliminar(true)}
-                style={{ background: 'none', border: '1px solid #B84B4B', color: '#B84B4B', borderRadius: 6, padding: '8px 14px', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
+                style={{ background: 'none', border: '1px solid var(--danger)', color: 'var(--danger)', borderRadius: 6, padding: '8px 14px', fontWeight: 600, cursor: 'pointer', fontSize: 13 }}
               >
                 🗑 Eliminar ruta
               </button>

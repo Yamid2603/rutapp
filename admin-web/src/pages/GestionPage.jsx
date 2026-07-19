@@ -524,14 +524,14 @@ export default function GestionPage() {
                 checked={empresaForm.rutaDesdeEmpresa}
                 disabled={!empresaForm.lat || !empresaForm.lng}
                 onChange={e => setEmpresaForm(f => ({ ...f, rutaDesdeEmpresa: e.target.checked }))}
-                style={{ width: 16, height: 16, accentColor: '#1693A5' }}
+                style={{ width: 16, height: 16, accentColor: 'var(--teal)' }}
               />
               <span style={{ fontSize: 13, color: empresaForm.lat ? '#1a1a1a' : '#9CA3AF' }}>
                 Iniciar y terminar rutas en la ubicación de la empresa
               </span>
             </label>
             {!empresaForm.lat && (
-              <span style={{ fontSize: 11, color: '#C07B2A' }}>
+              <span style={{ fontSize: 11, color: 'var(--warning)' }}>
                 ⚠️ Configura la ubicación primero
               </span>
             )}

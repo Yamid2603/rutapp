@@ -2,8 +2,8 @@
 
 .container {
   min-height: 100vh;
-  background: #F0F0D8;
-  color: #1a1a1a;
+  background: var(--cream);
+  color: var(--text-primary);
 }
 
 .header {
@@ -11,7 +11,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 28px;
-  background: #0D2433;
+  background: var(--navy);
   border-bottom: none;
 }
 
@@ -56,8 +56,8 @@
 }
 
 .logoutBtn:hover {
-  border-color: rgba(22,147,165,0.6);
-  color: #4DD4E4;
+  border-color: rgba(70,153,178,0.6);
+  color: var(--teal-light);
 }
 
 .main {
@@ -70,10 +70,10 @@
   text-align: center;
   padding: 52px 28px;
   background: #FFFFFF;
-  border: 1px solid rgba(13,36,51,0.06);
+  border: 1px solid rgba(28,58,82,0.06);
   border-radius: 18px;
   margin-bottom: 28px;
-  box-shadow: 0 4px 20px rgba(13,36,51,0.10), 0 12px 40px rgba(13,36,51,0.07);
+  box-shadow: 0 4px 20px rgba(28,58,82,0.10), 0 12px 40px rgba(28,58,82,0.07);
 }
 
 .welcomeIcon { font-size: 56px; margin-bottom: 14px; }
@@ -82,14 +82,14 @@
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 36px;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0 0 12px;
   letter-spacing: -0.5px;
 }
 
 .welcomeSub {
   font-size: 14.5px;
-  color: #8B949E;
+  color: var(--text-muted);
   line-height: 1.65;
   margin: 0 auto;
   max-width: 500px;
@@ -103,18 +103,18 @@
 
 .statCard {
   background: #FFFFFF;
-  border: 1px solid rgba(13,36,51,0.06);
+  border: 1px solid rgba(28,58,82,0.06);
   border-radius: 16px;
   padding: 24px 26px;
-  box-shadow: 0 2px 8px rgba(13,36,51,0.08), 0 8px 24px rgba(13,36,51,0.05);
+  box-shadow: 0 2px 8px rgba(28,58,82,0.08), 0 8px 24px rgba(28,58,82,0.05);
   transition: box-shadow 0.2s, transform 0.2s;
 }
-.statCard:hover { box-shadow: 0 4px 16px rgba(13,36,51,0.12), 0 12px 36px rgba(13,36,51,0.08); transform: translateY(-2px); }
+.statCard:hover { box-shadow: 0 4px 16px rgba(28,58,82,0.12), 0 12px 36px rgba(28,58,82,0.08); transform: translateY(-2px); }
 
 .statLabel {
   font-size: 10.5px;
   font-weight: 700;
-  color: #8B949E;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.9px;
   margin-bottom: 10px;
@@ -124,10 +124,10 @@
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 34px;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-primary);
   line-height: 1;
 }
 
-.green { color: #2E7D6B; }
+.green { color: var(--success); }
 .accent { color: var(--teal); }
-.red   { color: #B84B4B; }
+.red   { color: var(--danger); }
