@@ -55,6 +55,7 @@
   font-weight: 800;
   color: var(--text-primary);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .pct {
@@ -135,6 +136,7 @@
   padding: 11px 12px;
   color: var(--text-primary);
   border-bottom: 1px solid var(--cream-light);
+  font-variant-numeric: tabular-nums;
 }
 
 .table tr:last-child td { border-bottom: none; }
@@ -170,6 +172,7 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Badge */
