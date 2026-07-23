@@ -92,6 +92,15 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Gastos de empresa (contabilidad) — colección propia, separada de rutas.gastos[]
+    // (esos son operativos de camión/día). Solo admin: dato financiero sensible,
+    // el conductor no lo ve ni lo escribe.
+    match /gastosEmpresa/{id} {
+      allow read: if isAdmin() && resource.data.empresaId == myEmpresaId();
+      allow create, update: if isAdmin() && request.resource.data.empresaId == myEmpresaId();
+      allow delete: if false;
+    }
+
     // Operaciones de la cola offline que agotaron reintentos — visibles para
     // el admin, escritas por el conductor (create-only, igual que transacciones)
     match /operacionesFallidas/{id} {

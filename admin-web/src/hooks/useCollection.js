@@ -46,3 +46,7 @@ export function useUsuarios(empresaId) {
 export function useOperacionesFallidas(empresaId) {
   return useEmpresaCollection('operacionesFallidas', empresaId, [orderBy('fallidaEn', 'desc')]);
 }
+
+export function useGastosEmpresa(empresaId) {
+  return useEmpresaCollection('gastosEmpresa', empresaId, [orderBy('fecha', 'desc')]);
+}

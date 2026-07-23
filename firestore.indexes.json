@@ -17,6 +17,14 @@
       ]
     },
     {
+      "collectionGroup": "gastosEmpresa",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "fecha", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "operacionesFallidas",
       "queryScope": "COLLECTION",
       "fields": [
