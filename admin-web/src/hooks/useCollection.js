@@ -42,3 +42,7 @@ export function useCamiones(empresaId) {
 export function useUsuarios(empresaId) {
   return useEmpresaCollection('usuarios', empresaId);
 }
+
+export function useOperacionesFallidas(empresaId) {
+  return useEmpresaCollection('operacionesFallidas', empresaId, [orderBy('fallidaEn', 'desc')]);
+}

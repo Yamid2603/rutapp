@@ -80,6 +80,19 @@
   color: rgba(255,255,255,0.88);
 }
 
+.navBadge {
+  margin-left: auto;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 3px 6px;
+  border-radius: 20px;
+  min-width: 16px;
+  text-align: center;
+}
+
 .active {
   background: rgba(70,153,178,0.20);
   color: var(--teal-light);

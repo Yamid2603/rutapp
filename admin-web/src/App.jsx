@@ -10,6 +10,7 @@ import CuadrePage from './pages/CuadrePage';
 import ZonasPage from './pages/ZonasPage';
 import GestionPage from './pages/GestionPage';
 import AnalisisPage from './pages/AnalisisPage';
+import OperacionesFallidasPage from './pages/OperacionesFallidasPage';
 import PerfilAdminPage from './pages/PerfilAdminPage';
 import OnboardingPage from './pages/OnboardingPage';
 import UpdatePrompt from './components/UpdatePrompt';
@@ -32,6 +33,7 @@ function AdminRoutes() {
         <Route path="zonas" element={<ZonasPage />} />
         <Route path="gestion" element={<GestionPage />} />
         <Route path="analisis" element={<AnalisisPage />} />
+        <Route path="pendientes" element={<OperacionesFallidasPage />} />
         <Route path="perfil" element={<PerfilAdminPage />} />
       </Routes>
     </Layout>

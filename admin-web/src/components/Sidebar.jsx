@@ -1,8 +1,9 @@
 import { NavLink, Link } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Package, Wallet, CalendarDays, Settings, Sparkles,
+  LayoutDashboard, Users, Package, Wallet, CalendarDays, Settings, Sparkles, AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useOperacionesFallidas } from '../hooks/useCollection';
 import styles from './Sidebar.module.css';
 
 const NAV = [
@@ -13,10 +14,12 @@ const NAV = [
   { to: '/admin/zonas',     Icon: CalendarDays,     label: 'Zonas & Carga' },
   { to: '/admin/gestion',   Icon: Settings,         label: 'Gestión' },
   { to: '/admin/analisis',  Icon: Sparkles,         label: 'Análisis IA' },
+  { to: '/admin/pendientes', Icon: AlertTriangle,   label: 'Pendientes sin sincronizar' },
 ];
 
 export default function Sidebar({ isOpen = false, onClose }) {
-  const { user, nombre, signOut } = useAuth();
+  const { user, nombre, empresaId, signOut } = useAuth();
+  const { docs: pendientes } = useOperacionesFallidas(empresaId);
 
   const initials = (nombre || user?.email || '?')
     .split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
@@ -43,6 +46,9 @@ export default function Sidebar({ isOpen = false, onClose }) {
                   <Icon size={18} strokeWidth={isActive ? 2.6 : 2.2} />
                 </span>
                 <span>{label}</span>
+                {to === '/admin/pendientes' && pendientes.length > 0 && (
+                  <span className={styles.navBadge}>{pendientes.length}</span>
+                )}
               </>
             )}
           </NavLink>

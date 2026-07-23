@@ -15,6 +15,14 @@
         { "fieldPath": "empresaId", "order": "ASCENDING" },
         { "fieldPath": "clienteId", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "operacionesFallidas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "fallidaEn", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
