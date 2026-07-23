@@ -5,12 +5,13 @@ import { httpsCallable } from 'firebase/functions';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth, db, storage, functions } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
-import { useCamiones, useUsuarios, useClientes, useRutas } from '../hooks/useCollection';
+import { useCamiones, useUsuarios, useClientes, useRutas, useCategoriasGasto, useBeneficiariosGasto } from '../hooks/useCollection';
 import { useUmbrales } from '../hooks/useAnalisisIA';
 import { downloadCSV } from '../utils/csv';
 import { money, validarTelefono } from '../utils/format';
+import { idCatalogo } from '../utils/slug';
 import Modal from '../components/Modal';
-import FormField, { Btn } from '../components/FormField';
+import FormField, { Select, Btn } from '../components/FormField';
 import UbicacionPicker from '../components/UbicacionPicker';
 import styles from './GestionPage.module.css';
 
@@ -20,7 +21,62 @@ export default function GestionPage() {
   const { docs: usuarios } = useUsuarios(empresaId);
   const { docs: clientes } = useClientes(empresaId);
   const { docs: rutas } = useRutas(empresaId);
+  const { docs: categoriasGasto } = useCategoriasGasto(empresaId);
+  const { docs: beneficiariosGasto } = useBeneficiariosGasto(empresaId);
   const { umbrales, setUmbrales, guardarUmbrales, saving: savingU, loading: loadingU } = useUmbrales(empresaId);
+
+  // ---- Categorías de gasto ----
+  const [catForm, setCatForm] = useState(null); // null=cerrado, {}=nueva, {id,nombre,...}=editar
+  const [catSaving, setCatSaving] = useState(false);
+
+  async function guardarCategoria() {
+    if (!catForm.nombre?.trim()) return;
+    setCatSaving(true);
+    try {
+      const id = catForm.id || idCatalogo(empresaId, catForm.nombre);
+      await setDoc(doc(db, 'categoriasGasto', id), {
+        empresaId, nombre: catForm.nombre.trim(),
+        activa: catForm.activa ?? true,
+        creadoEn: catForm.creadoEn || new Date().toISOString(),
+      });
+      setCatForm(null);
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      setCatSaving(false);
+    }
+  }
+
+  async function toggleCategoria(cat) {
+    await updateDoc(doc(db, 'categoriasGasto', cat.id), { activa: !cat.activa });
+  }
+
+  // ---- Beneficiarios ----
+  const [benForm, setBenForm] = useState(null);
+  const [benSaving, setBenSaving] = useState(false);
+
+  async function guardarBeneficiario() {
+    if (!benForm.nombre?.trim() || !benForm.tipo) return;
+    setBenSaving(true);
+    try {
+      const id = benForm.id || idCatalogo(empresaId, benForm.nombre);
+      await setDoc(doc(db, 'beneficiariosGasto', id), {
+        empresaId, nombre: benForm.nombre.trim(), tipo: benForm.tipo,
+        nitCedula: benForm.nitCedula?.trim() || null,
+        activo: benForm.activo ?? true,
+        creadoEn: benForm.creadoEn || new Date().toISOString(),
+      });
+      setBenForm(null);
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      setBenSaving(false);
+    }
+  }
+
+  async function toggleBeneficiario(ben) {
+    await updateDoc(doc(db, 'beneficiariosGasto', ben.id), { activo: !ben.activo });
+  }
 
   // ---- Camiones & Conductores ----
   const [addCamionOpen, setAddCamionOpen] = useState(false);
@@ -440,6 +496,68 @@ export default function GestionPage() {
         </div>
       </div>
 
+      {/* Section: Categorías de gasto */}
+      <div className={styles.card} style={{ marginTop: 20 }}>
+        <div className={styles.cardHeader}>
+          <h3 className={styles.cardTitle}>Categorías de gasto</h3>
+          <Btn onClick={() => setCatForm({ nombre: '' })}>+ Añadir categoría</Btn>
+        </div>
+        <table className={styles.table}>
+          <thead>
+            <tr><th>Nombre</th><th>Estado</th><th></th></tr>
+          </thead>
+          <tbody>
+            {categoriasGasto.map(c => (
+              <tr key={c.id}>
+                <td className={styles.bold}>{c.nombre}</td>
+                <td>{c.activa ? 'Activa' : <span className={styles.muted}>Desactivada</span>}</td>
+                <td className={styles.actionCell}>
+                  <button className={styles.iconBtn} onClick={() => setCatForm(c)} title="Editar">✏️</button>
+                  <button className={styles.iconBtn} onClick={() => toggleCategoria(c)} title={c.activa ? 'Desactivar' : 'Activar'}>
+                    {c.activa ? '⏸️' : '▶️'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {!categoriasGasto.length && (
+              <tr><td colSpan={3} className={styles.empty}>No hay categorías todavía</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Section: Beneficiarios */}
+      <div className={styles.card} style={{ marginTop: 20 }}>
+        <div className={styles.cardHeader}>
+          <h3 className={styles.cardTitle}>Beneficiarios / proveedores</h3>
+          <Btn onClick={() => setBenForm({ nombre: '', tipo: 'natural', nitCedula: '' })}>+ Añadir beneficiario</Btn>
+        </div>
+        <table className={styles.table}>
+          <thead>
+            <tr><th>Nombre</th><th>Tipo</th><th>NIT/Cédula</th><th>Estado</th><th></th></tr>
+          </thead>
+          <tbody>
+            {beneficiariosGasto.map(b => (
+              <tr key={b.id}>
+                <td className={styles.bold}>{b.nombre}</td>
+                <td>{b.tipo === 'empresa' ? 'Empresa' : 'Persona natural'}</td>
+                <td>{b.nitCedula || '—'}</td>
+                <td>{b.activo ? 'Activo' : <span className={styles.muted}>Desactivado</span>}</td>
+                <td className={styles.actionCell}>
+                  <button className={styles.iconBtn} onClick={() => setBenForm(b)} title="Editar">✏️</button>
+                  <button className={styles.iconBtn} onClick={() => toggleBeneficiario(b)} title={b.activo ? 'Desactivar' : 'Activar'}>
+                    {b.activo ? '⏸️' : '▶️'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {!beneficiariosGasto.length && (
+              <tr><td colSpan={5} className={styles.empty}>No hay beneficiarios todavía</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
       {/* Section: Umbrales IA */}
       <div className={styles.card} style={{ marginTop: 20 }}>
         <h3 className={styles.cardTitle}>🎯 Configurar Umbrales de Análisis IA</h3>
@@ -611,6 +729,38 @@ export default function GestionPage() {
             {saving ? 'Guardando...' : 'Reasignar'}
           </Btn>
         </div>
+      </Modal>
+
+      <Modal open={!!catForm} onClose={() => setCatForm(null)} title={catForm?.id ? 'Editar categoría' : 'Nueva categoría'}>
+        {catForm && (
+          <>
+            <FormField label="Nombre" value={catForm.nombre} onChange={e => setCatForm(f => ({ ...f, nombre: e.target.value }))} />
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
+              <Btn variant="secondary" onClick={() => setCatForm(null)}>Cancelar</Btn>
+              <Btn onClick={guardarCategoria} disabled={catSaving || !catForm.nombre?.trim()}>
+                {catSaving ? 'Guardando...' : 'Guardar'}
+              </Btn>
+            </div>
+          </>
+        )}
+      </Modal>
+
+      <Modal open={!!benForm} onClose={() => setBenForm(null)} title={benForm?.id ? 'Editar beneficiario' : 'Nuevo beneficiario'}>
+        {benForm && (
+          <>
+            <FormField label="Nombre" value={benForm.nombre} onChange={e => setBenForm(f => ({ ...f, nombre: e.target.value }))} />
+            <Select label="Tipo" value={benForm.tipo}
+              onChange={v => setBenForm(f => ({ ...f, tipo: v }))}
+              options={[{ value: 'natural', label: 'Persona natural' }, { value: 'empresa', label: 'Empresa' }]} />
+            <FormField label="NIT / Cédula (opcional)" value={benForm.nitCedula || ''} onChange={e => setBenForm(f => ({ ...f, nitCedula: e.target.value }))} />
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
+              <Btn variant="secondary" onClick={() => setBenForm(null)}>Cancelar</Btn>
+              <Btn onClick={guardarBeneficiario} disabled={benSaving || !benForm.nombre?.trim()}>
+                {benSaving ? 'Guardando...' : 'Guardar'}
+              </Btn>
+            </div>
+          </>
+        )}
       </Modal>
     </div>
   );

@@ -50,3 +50,11 @@ export function useOperacionesFallidas(empresaId) {
 export function useGastosEmpresa(empresaId) {
   return useEmpresaCollection('gastosEmpresa', empresaId, [orderBy('fecha', 'desc')]);
 }
+
+export function useCategoriasGasto(empresaId) {
+  return useEmpresaCollection('categoriasGasto', empresaId, [orderBy('nombre')]);
+}
+
+export function useBeneficiariosGasto(empresaId) {
+  return useEmpresaCollection('beneficiariosGasto', empresaId, [orderBy('nombre')]);
+}

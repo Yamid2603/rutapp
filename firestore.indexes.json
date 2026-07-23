@@ -54,6 +54,22 @@
       ]
     },
     {
+      "collectionGroup": "categoriasGasto",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "nombre", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "beneficiariosGasto",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "nombre", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "operacionesFallidas",
       "queryScope": "COLLECTION",
       "fields": [
