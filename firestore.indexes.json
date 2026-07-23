@@ -9,11 +9,40 @@
       ]
     },
     {
+      "_comment": "Crítico: RutaContext.loadRuta() en conductor-app lo usa cada vez que un conductor abre la app",
+      "collectionGroup": "rutas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "camionId", "order": "ASCENDING" },
+        { "fieldPath": "fecha", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "historialCliente",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "empresaId", "order": "ASCENDING" },
         { "fieldPath": "clienteId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "_comment": "Preexistente en producción, sin consulta que lo requiera hoy (useHistorialCliente.js filtra fecha en memoria, no en la query) — conservado por precaución, candidato a limpieza futura",
+      "collectionGroup": "historialCliente",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "clienteId", "order": "ASCENDING" },
+        { "fieldPath": "fecha", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "_comment": "functions/chatbot-procesarConsulta.js — respuestas sobre los últimos 30 días",
+      "collectionGroup": "transacciones",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "fecha", "order": "ASCENDING" }
       ]
     },
     {
