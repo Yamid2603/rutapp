@@ -92,6 +92,14 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Operaciones de la cola offline que agotaron reintentos — visibles para
+    // el admin, escritas por el conductor (create-only, igual que transacciones)
+    match /operacionesFallidas/{id} {
+      allow read: if isAdmin() && resource.data.empresaId == myEmpresaId();
+      allow create: if authed() && request.resource.data.empresaId == myEmpresaId();
+      allow update, delete: if false;
+    }
+
     // ── Análisis (solo Cloud Functions escriben) ───────────────────────────
     match /analisisSemanal/{id} {
       allow read: if isAdmin() && resource.data.empresaId == myEmpresaId();
