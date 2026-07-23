@@ -7,12 +7,13 @@ import Modal from '../components/Modal';
 import FormField, { Select, Btn } from '../components/FormField';
 import styles from './DashboardPage.module.css';
 
-// Enum cerrado — exactamente estas 10, sin "otro". Esa lógica de catch-all
+// Enum cerrado — exactamente estas 11, sin "otro". Esa lógica de catch-all
 // es propia de rutas.gastos[] (operativo de ruta); aquí no aplica.
+// Nota de mapeo (Excel original): "Gastos de Representación" → Gastos Operativos.
 export const CATEGORIAS_EMPRESA = [
   'Salarios', 'Seguridad Social', 'Transporte', 'Arreglo Vehículos', 'Impuestos',
   'Gastos Contables', 'Gastos Operativos', 'Gastos de Producción', 'Inventario',
-  'Mantenimiento Planta',
+  'Mantenimiento Planta', 'Servicios',
 ];
 
 function hoyISO() {
