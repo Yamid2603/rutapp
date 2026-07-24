@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute, { ModuleRoute } from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import DashboardPage from './pages/DashboardPage';
 import ClientesPage from './pages/ClientesPage';
@@ -37,9 +37,9 @@ function AdminRoutes() {
         <Route path="gestion" element={<GestionPage />} />
         <Route path="analisis" element={<AnalisisPage />} />
         <Route path="pendientes" element={<OperacionesFallidasPage />} />
-        <Route path="gastos-empresa" element={<GastosEmpresaPage />} />
-        <Route path="balance" element={<BalancePage />} />
-        <Route path="comodato" element={<ComodatoPage />} />
+        <Route path="gastos-empresa" element={<ModuleRoute modulo="gastos"><GastosEmpresaPage /></ModuleRoute>} />
+        <Route path="balance" element={<ModuleRoute modulo="balance"><BalancePage /></ModuleRoute>} />
+        <Route path="comodato" element={<ModuleRoute modulo="comodato"><ComodatoPage /></ModuleRoute>} />
         <Route path="perfil" element={<PerfilAdminPage />} />
       </Routes>
     </Layout>

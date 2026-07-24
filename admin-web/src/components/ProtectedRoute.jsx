@@ -26,3 +26,11 @@ export default function ProtectedRoute({ children }) {
 
   return children;
 }
+
+export function ModuleRoute({ modulo, children }) {
+  const { modulosHabilitados } = useAuth();
+  if (!modulosHabilitados.includes(modulo)) {
+    return <Navigate to="/admin" replace />;
+  }
+  return children;
+}

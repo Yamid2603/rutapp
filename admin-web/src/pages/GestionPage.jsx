@@ -18,7 +18,7 @@ import UbicacionPicker from '../components/UbicacionPicker';
 import styles from './GestionPage.module.css';
 
 export default function GestionPage() {
-  const { empresaId } = useAuth();
+  const { empresaId, modulosHabilitados } = useAuth();
   const { docs: camiones } = useCamiones(empresaId);
   const { docs: usuarios } = useUsuarios(empresaId);
   const { docs: clientes } = useClientes(empresaId);
@@ -769,20 +769,22 @@ export default function GestionPage() {
           </p>
         </div>
 
-        <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--cream-border)' }}>
-          <div className={styles.cardTitle} style={{ fontSize: 14, marginBottom: 8 }}>Facturación por período</div>
-          <p style={{ fontSize: 12.5, color: 'var(--text-muted)', marginBottom: 10 }}>
-            Clientes tipo "Facturación electrónica" cuyo día de facturación cae en el rango — entregas
-            no facturadas aún, con detalle por producto. Lo que hoy es el Registro de Facturas a mano.
-          </p>
-          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' }}>
-            <FormField label="Desde" type="date" value={facDesde} onChange={e => setFacDesde(e.target.value)} />
-            <FormField label="Hasta" type="date" value={facHasta} onChange={e => setFacHasta(e.target.value)} />
-            <Btn onClick={exportFacturacion} disabled={facGenerando}>
-              {facGenerando ? 'Generando...' : '⬇ Exportar facturación'}
-            </Btn>
+        {modulosHabilitados.includes('facturacion') && (
+          <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--cream-border)' }}>
+            <div className={styles.cardTitle} style={{ fontSize: 14, marginBottom: 8 }}>Facturación por período</div>
+            <p style={{ fontSize: 12.5, color: 'var(--text-muted)', marginBottom: 10 }}>
+              Clientes tipo "Facturación electrónica" cuyo día de facturación cae en el rango — entregas
+              no facturadas aún, con detalle por producto. Lo que hoy es el Registro de Facturas a mano.
+            </p>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+              <FormField label="Desde" type="date" value={facDesde} onChange={e => setFacDesde(e.target.value)} />
+              <FormField label="Hasta" type="date" value={facHasta} onChange={e => setFacHasta(e.target.value)} />
+              <Btn onClick={exportFacturacion} disabled={facGenerando}>
+                {facGenerando ? 'Generando...' : '⬇ Exportar facturación'}
+              </Btn>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Section: Categorías de gasto */}

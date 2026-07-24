@@ -11,9 +11,9 @@ const NAV = [
   { to: '/admin/clientes',  Icon: Users,            label: 'Clientes' },
   { to: '/admin/productos', Icon: Package,          label: 'Productos' },
   { to: '/admin/cuadre',    Icon: Wallet,           label: 'Cuadre del día' },
-  { to: '/admin/gastos-empresa', Icon: Receipt,     label: 'Gastos de empresa' },
-  { to: '/admin/balance',   Icon: ChartNoAxesCombined, label: 'Balance' },
-  { to: '/admin/comodato',  Icon: Boxes,               label: 'Activos en Préstamo' },
+  { to: '/admin/gastos-empresa', Icon: Receipt,     label: 'Gastos de empresa', modulo: 'gastos' },
+  { to: '/admin/balance',   Icon: ChartNoAxesCombined, label: 'Balance',         modulo: 'balance' },
+  { to: '/admin/comodato',  Icon: Boxes,               label: 'Activos en Préstamo', modulo: 'comodato' },
   { to: '/admin/zonas',     Icon: CalendarDays,     label: 'Zonas & Carga' },
   { to: '/admin/gestion',   Icon: Settings,         label: 'Gestión' },
   { to: '/admin/analisis',  Icon: Sparkles,         label: 'Análisis IA' },
@@ -21,8 +21,10 @@ const NAV = [
 ];
 
 export default function Sidebar({ isOpen = false, onClose }) {
-  const { user, nombre, empresaId, signOut } = useAuth();
+  const { user, nombre, empresaId, modulosHabilitados, signOut } = useAuth();
   const { docs: pendientes } = useOperacionesFallidas(empresaId);
+
+  const nav = NAV.filter(({ modulo }) => !modulo || modulosHabilitados.includes(modulo));
 
   const initials = (nombre || user?.email || '?')
     .split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
@@ -35,7 +37,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
       </div>
 
       <nav className={styles.nav}>
-        {NAV.map(({ to, Icon, label }) => (
+        {nav.map(({ to, Icon, label }) => (
           <NavLink
             key={to}
             to={to}

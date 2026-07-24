@@ -37,6 +37,7 @@ export function AuthProvider({ children }) {
   const [role, setRole] = useState(null);
   const [empresaId, setEmpresaId] = useState(null);
   const [nombre, setNombre] = useState(null);
+  const [modulosHabilitados, setModulosHabilitados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -45,6 +46,7 @@ export function AuthProvider({ children }) {
     setRole(null);
     setEmpresaId(null);
     setNombre(null);
+    setModulosHabilitados([]);
   }
 
   useEffect(() => {
@@ -65,6 +67,12 @@ export function AuthProvider({ children }) {
             setRole(data.rol);
             setEmpresaId(data.empresaId ?? null);
             setNombre(data.nombre ?? null);
+            if (data.empresaId) {
+              const empresaDoc = await getDoc(doc(db, 'empresas', data.empresaId));
+              setModulosHabilitados(empresaDoc.exists() ? (empresaDoc.data().modulosHabilitados || []) : []);
+            } else {
+              setModulosHabilitados([]);
+            }
           } else {
             clearUser();
           }
@@ -125,7 +133,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, role, empresaId, nombre, loading, error, signIn, signInWithGoogle, signOut }}>
+    <AuthContext.Provider value={{ user, role, empresaId, nombre, modulosHabilitados, loading, error, signIn, signInWithGoogle, signOut }}>
       {children}
     </AuthContext.Provider>
   );
