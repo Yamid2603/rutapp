@@ -81,10 +81,20 @@ export function limiteCredito(compraPromMensual, pctPago, meses) {
 
 /**
  * Semáforo de deuda vs límite.
- * green ≤ 60%, yellow 60-90%, red > 90%
+ * green ≤ 60%, yellow 60-90%, red > 90%.
+ *
+ * Cuando no hay límite calculable (cliente sin historial de compras y sin
+ * límite manual configurado), NO se asume riesgo automáticamente — un
+ * límite en 0 no significa "deuda crítica", significa "no hay datos".
+ * Dos casos distintos, nunca mezclados con el riesgo real:
+ *   - sin-datos: tampoco hay deuda → no hay nada que alertar.
+ *   - sin-limite: sí hay deuda pero no se puede evaluar contra un límite →
+ *     merece revisión manual, pero es una alerta distinta a "riesgo confirmado".
  */
 export function semaforoDeuda(deudaActual, limiteRecomendado) {
-  if (!limiteRecomendado) return 'red';
+  if (!limiteRecomendado) {
+    return deudaActual > 0 ? 'sin-limite' : 'sin-datos';
+  }
   const pct = (deudaActual / limiteRecomendado) * 100;
   if (pct <= 60) return 'green';
   if (pct <= 90) return 'yellow';

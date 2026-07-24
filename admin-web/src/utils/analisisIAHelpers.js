@@ -348,8 +348,10 @@ export function calcularRiesgoClientes(
     });
   }
 
-  // Ordenar: red primero, luego yellow, luego green; dentro de cada grupo por deuda DESC
-  const orden = { red: 0, yellow: 1, green: 2 };
+  // Ordenar: red primero, luego yellow, luego green; sin-limite (deuda real
+  // sin poder evaluarse) antes que sin-datos (nada que revisar); dentro de
+  // cada grupo por deuda DESC
+  const orden = { red: 0, yellow: 1, green: 2, 'sin-limite': 3, 'sin-datos': 4 };
   resultado.sort((a, b) => {
     const diff = orden[a.status.semaforo] - orden[b.status.semaforo];
     return diff !== 0 ? diff : b.deuda.actual - a.deuda.actual;
@@ -582,8 +584,11 @@ export function generarAlertas(eficiencia, riesgo, oportunidades) {
     }
   }
 
-  // Alertas de clientes con deuda crítica
-  const clientesRojo = riesgo.filter(r => r.status.semaforo === 'red');
+  // Alertas de clientes con deuda crítica — semaforo==='red' Y deuda>0
+  // explícitamente (no solo semaforo): defensa extra para que un cliente
+  // sin datos suficientes nunca aparezca aquí, aunque cambie la lógica de
+  // semaforoDeuda() en el futuro.
+  const clientesRojo = riesgo.filter(r => r.status.semaforo === 'red' && r.deuda.actual > 0);
   const deudaTotalCritica = clientesRojo.reduce((s, r) => s + r.deuda.actual, 0);
   if (clientesRojo.length > 0) {
     alertas.push({
@@ -599,8 +604,8 @@ export function generarAlertas(eficiencia, riesgo, oportunidades) {
     });
   }
 
-  // Alertas individuales de riesgo alto
-  for (const r of riesgo.filter(x => x.status.semaforo === 'red').slice(0, 5)) {
+  // Alertas individuales de riesgo alto — misma defensa: semaforo Y deuda>0
+  for (const r of riesgo.filter(x => x.status.semaforo === 'red' && x.deuda.actual > 0).slice(0, 5)) {
     alertas.push({
       id: alertaId(),
       tipo: 'RIESGO_ALTO',
