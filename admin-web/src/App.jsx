@@ -12,6 +12,7 @@ import GestionPage from './pages/GestionPage';
 import AnalisisPage from './pages/AnalisisPage';
 import OperacionesFallidasPage from './pages/OperacionesFallidasPage';
 import GastosEmpresaPage from './pages/GastosEmpresaPage';
+import BalancePage from './pages/BalancePage';
 import PerfilAdminPage from './pages/PerfilAdminPage';
 import OnboardingPage from './pages/OnboardingPage';
 import UpdatePrompt from './components/UpdatePrompt';
@@ -36,6 +37,7 @@ function AdminRoutes() {
         <Route path="analisis" element={<AnalisisPage />} />
         <Route path="pendientes" element={<OperacionesFallidasPage />} />
         <Route path="gastos-empresa" element={<GastosEmpresaPage />} />
+        <Route path="balance" element={<BalancePage />} />
         <Route path="perfil" element={<PerfilAdminPage />} />
       </Routes>
     </Layout>

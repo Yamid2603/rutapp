@@ -5,11 +5,12 @@ import { httpsCallable } from 'firebase/functions';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth, db, storage, functions } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
-import { useCamiones, useUsuarios, useClientes, useRutas, useCategoriasGasto, useBeneficiariosGasto } from '../hooks/useCollection';
+import { useCamiones, useUsuarios, useClientes, useRutas, useCategoriasGasto, useBeneficiariosGasto, useGastosEmpresa } from '../hooks/useCollection';
 import { useUmbrales } from '../hooks/useAnalisisIA';
 import { downloadCSV } from '../utils/csv';
 import { money, validarTelefono } from '../utils/format';
 import { idCatalogo } from '../utils/slug';
+import { calcularBalance } from '../utils/balanceHelpers';
 import Modal from '../components/Modal';
 import FormField, { Select, Btn } from '../components/FormField';
 import UbicacionPicker from '../components/UbicacionPicker';
@@ -23,6 +24,7 @@ export default function GestionPage() {
   const { docs: rutas } = useRutas(empresaId);
   const { docs: categoriasGasto } = useCategoriasGasto(empresaId);
   const { docs: beneficiariosGasto } = useBeneficiariosGasto(empresaId);
+  const { docs: gastosEmpresaDocs } = useGastosEmpresa(empresaId);
   const { umbrales, setUmbrales, guardarUmbrales, saving: savingU, loading: loadingU } = useUmbrales(empresaId);
 
   // ---- Categorías de gasto ----
@@ -76,6 +78,49 @@ export default function GestionPage() {
 
   async function toggleBeneficiario(ben) {
     await updateDoc(doc(db, 'beneficiariosGasto', ben.id), { activo: !ben.activo });
+  }
+
+  // ---- Balance (mismo cálculo que la pantalla Balance, reutilizado) ----
+  const [balDesde, setBalDesde] = useState(`${new Date().getFullYear()}-01-01`);
+  const [balHasta, setBalHasta] = useState(new Date().toISOString().split('T')[0]);
+  const [balGenerando, setBalGenerando] = useState(false);
+
+  async function exportBalance() {
+    setBalGenerando(true);
+    try {
+      const dentroDelRango = (fecha) => fecha && fecha >= balDesde && fecha <= balHasta;
+      const txSnap = await getDocs(query(collection(db, 'transacciones'), where('empresaId', '==', empresaId)));
+      const transacciones = txSnap.docs.map(d => d.data()).filter(t => dentroDelRango(t.fecha));
+      const gastosEmpresaFiltrado = gastosEmpresaDocs.filter(g => dentroDelRango(g.fecha));
+      const rutasFiltradas = rutas.filter(r => dentroDelRango(r.fecha));
+
+      const balance = calcularBalance({
+        transacciones, gastosEmpresa: gastosEmpresaFiltrado, rutas: rutasFiltradas,
+        categorias: categoriasGasto, periodoDesde: balDesde, periodoHasta: balHasta,
+      });
+
+      const rows = balance.filas.map(f => ({
+        Mes: f.mes,
+        ...Object.fromEntries(balance.nombresCategoria.map(n => [n, f.porCategoria[n] || 0])),
+        'Sin clasificar': f.sinClasificar,
+        Ventas: f.ventas,
+        Gastos: f.gastosTotal,
+        Utilidad: f.utilidad,
+      }));
+      rows.push({
+        Mes: 'TOTAL',
+        ...Object.fromEntries(balance.nombresCategoria.map(n => [n, balance.resumenAnual.porCategoria[n]])),
+        'Sin clasificar': balance.resumenAnual.sinClasificar,
+        Ventas: balance.resumenAnual.ventas,
+        Gastos: balance.resumenAnual.gastosTotal,
+        Utilidad: balance.resumenAnual.utilidad,
+      });
+      downloadCSV(rows, `balance-${balDesde}-a-${balHasta}.csv`);
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      setBalGenerando(false);
+    }
   }
 
   // ---- Facturación por período (clientes tipo 'facturacion') ----
@@ -596,6 +641,20 @@ export default function GestionPage() {
           <button className={styles.exportBtn} onClick={exportContabilidad}>
             🧾 Para contabilidad
           </button>
+        </div>
+
+        <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--cream-border)' }}>
+          <div className={styles.cardTitle} style={{ fontSize: 14, marginBottom: 8 }}>Balance (mes × categoría)</div>
+          <p style={{ fontSize: 12.5, color: 'var(--text-muted)', marginBottom: 10 }}>
+            Mismo cálculo que la pantalla Balance — Ventas menos gastos por categoría, con Sin clasificar aparte.
+          </p>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+            <FormField label="Desde" type="date" value={balDesde} onChange={e => setBalDesde(e.target.value)} />
+            <FormField label="Hasta" type="date" value={balHasta} onChange={e => setBalHasta(e.target.value)} />
+            <Btn onClick={exportBalance} disabled={balGenerando}>
+              {balGenerando ? 'Generando...' : '⬇ Exportar balance'}
+            </Btn>
+          </div>
         </div>
 
         <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--cream-border)' }}>
