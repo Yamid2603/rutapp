@@ -92,6 +92,8 @@
 .row_green  { border-left: 3px solid var(--success); }
 .row_yellow { border-left: 3px solid var(--warning); }
 .row_red    { border-left: 3px solid var(--danger); }
+.row_sin-datos  { border-left: 3px solid var(--text-muted); opacity: 0.7; }
+.row_sin-limite { border-left: 3px solid #9678C4; }
 
 .badge {
   padding: 3px 10px;

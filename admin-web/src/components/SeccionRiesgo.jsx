@@ -32,10 +32,16 @@ export default function SeccionRiesgo({ datos, exportable }) {
                 <td>{d.status.porcentajeDelLimite.toFixed(0)}%</td>
                 <td>{d.historialPago.percentajePago.toFixed(0)}%</td>
                 <td>
-                  <span className={styles.status}>
+                  <span className={styles.status} title={
+                    d.status.semaforo === 'sin-datos' ? 'Sin historial de compras — nada que evaluar todavía'
+                    : d.status.semaforo === 'sin-limite' ? 'Tiene deuda pero no hay límite calculable — revisar manualmente'
+                    : undefined
+                  }>
                     {d.status.semaforo === 'red' && '🔴'}
                     {d.status.semaforo === 'yellow' && '🟡'}
                     {d.status.semaforo === 'green' && '🟢'}
+                    {d.status.semaforo === 'sin-datos' && '⚪'}
+                    {d.status.semaforo === 'sin-limite' && '🟣'}
                   </span>
                 </td>
               </tr>
