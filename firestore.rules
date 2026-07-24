@@ -142,17 +142,37 @@ service cloud.firestore {
 
     // Gastos de empresa (contabilidad) — colección propia, separada de rutas.gastos[]
     // (esos son operativos de camión/día). Solo admin: dato financiero sensible,
-    // el conductor no lo ve ni lo escribe. create/update valida contra los
-    // catálogos: la categoría y el beneficiario referenciados deben existir
-    // y estar activos — así un gasto nunca puede quedar con una categoría
-    // desactivada o inventada, sin importar qué escriba el cliente.
+    // el conductor no lo ve ni lo escribe.
+    //
+    // create: la categoría y el beneficiario referenciados deben existir y
+    // estar activos — "desactivar" significa exactamente que ya no se puede
+    // elegir para algo nuevo.
+    //
+    // update: si la categoría/beneficiario NO cambian respecto al gasto ya
+    // guardado, se permite aunque hoy estén desactivados — corregir el monto
+    // o la fecha de un gasto viejo no debe bloquearse porque su categoría se
+    // desactivó después (eso rompería "nunca se elimina, solo se desactiva,
+    // para no romper el historial"). Si SÍ cambian a una categoría/beneficiario
+    // distinto, ese nuevo valor debe estar activo — mismo caso que create,
+    // reasignar a algo desactivado no es válido.
     match /gastosEmpresa/{id} {
       allow read: if isAdmin() && resource.data.empresaId == myEmpresaId();
-      allow create, update: if isAdmin() && request.resource.data.empresaId == myEmpresaId()
+      allow create: if isAdmin() && request.resource.data.empresaId == myEmpresaId()
         && get(/databases/$(database)/documents/categoriasGasto/$(request.resource.data.categoriaId)).data.empresaId == myEmpresaId()
         && get(/databases/$(database)/documents/categoriasGasto/$(request.resource.data.categoriaId)).data.activa == true
         && get(/databases/$(database)/documents/beneficiariosGasto/$(request.resource.data.beneficiarioId)).data.empresaId == myEmpresaId()
         && get(/databases/$(database)/documents/beneficiariosGasto/$(request.resource.data.beneficiarioId)).data.activo == true;
+      allow update: if isAdmin() && request.resource.data.empresaId == myEmpresaId()
+        && (
+          request.resource.data.categoriaId == resource.data.categoriaId ||
+          (get(/databases/$(database)/documents/categoriasGasto/$(request.resource.data.categoriaId)).data.empresaId == myEmpresaId()
+            && get(/databases/$(database)/documents/categoriasGasto/$(request.resource.data.categoriaId)).data.activa == true)
+        )
+        && (
+          request.resource.data.beneficiarioId == resource.data.beneficiarioId ||
+          (get(/databases/$(database)/documents/beneficiariosGasto/$(request.resource.data.beneficiarioId)).data.empresaId == myEmpresaId()
+            && get(/databases/$(database)/documents/beneficiariosGasto/$(request.resource.data.beneficiarioId)).data.activo == true)
+        );
       allow delete: if false;
     }
 
