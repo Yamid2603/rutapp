@@ -1,6 +1,6 @@
 import { NavLink, Link } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Package, Wallet, CalendarDays, Settings, Sparkles, AlertTriangle, Receipt, ChartNoAxesCombined,
+  LayoutDashboard, Users, Package, Wallet, CalendarDays, Settings, Sparkles, AlertTriangle, Receipt, ChartNoAxesCombined, Boxes,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useOperacionesFallidas } from '../hooks/useCollection';
@@ -13,6 +13,7 @@ const NAV = [
   { to: '/admin/cuadre',    Icon: Wallet,           label: 'Cuadre del día' },
   { to: '/admin/gastos-empresa', Icon: Receipt,     label: 'Gastos de empresa' },
   { to: '/admin/balance',   Icon: ChartNoAxesCombined, label: 'Balance' },
+  { to: '/admin/comodato',  Icon: Boxes,               label: 'Comodato' },
   { to: '/admin/zonas',     Icon: CalendarDays,     label: 'Zonas & Carga' },
   { to: '/admin/gestion',   Icon: Settings,         label: 'Gestión' },
   { to: '/admin/analisis',  Icon: Sparkles,         label: 'Análisis IA' },

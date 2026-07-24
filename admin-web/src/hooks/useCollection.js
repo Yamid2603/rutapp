@@ -51,6 +51,14 @@ export function useGastosEmpresa(empresaId) {
   return useEmpresaCollection('gastosEmpresa', empresaId, [orderBy('fecha', 'desc')]);
 }
 
+export function useTiposActivoComodato(empresaId) {
+  return useEmpresaCollection('tiposActivoComodato', empresaId, [orderBy('nombre')]);
+}
+
+export function useComodatoMovimientos(empresaId) {
+  return useEmpresaCollection('comodatoMovimientos', empresaId, [orderBy('creadoEn', 'desc')]);
+}
+
 export function useCategoriasGasto(empresaId) {
   return useEmpresaCollection('categoriasGasto', empresaId, [orderBy('nombre')]);
 }

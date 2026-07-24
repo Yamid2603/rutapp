@@ -5,7 +5,7 @@ import { httpsCallable } from 'firebase/functions';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth, db, storage, functions } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
-import { useCamiones, useUsuarios, useClientes, useRutas, useCategoriasGasto, useBeneficiariosGasto, useGastosEmpresa } from '../hooks/useCollection';
+import { useCamiones, useUsuarios, useClientes, useRutas, useCategoriasGasto, useBeneficiariosGasto, useGastosEmpresa, useTiposActivoComodato } from '../hooks/useCollection';
 import { useUmbrales } from '../hooks/useAnalisisIA';
 import { downloadCSV } from '../utils/csv';
 import { money, validarTelefono } from '../utils/format';
@@ -26,6 +26,33 @@ export default function GestionPage() {
   const { docs: categoriasGasto } = useCategoriasGasto(empresaId);
   const { docs: beneficiariosGasto } = useBeneficiariosGasto(empresaId);
   const { docs: gastosEmpresaDocs } = useGastosEmpresa(empresaId);
+  const { docs: tiposActivo } = useTiposActivoComodato(empresaId);
+
+  // ---- Tipos de activo comodato (mismo patrón que categorías de gasto) ----
+  const [tipoActivoForm, setTipoActivoForm] = useState(null);
+  const [tipoActivoSaving, setTipoActivoSaving] = useState(false);
+
+  async function guardarTipoActivo() {
+    if (!tipoActivoForm.nombre?.trim()) return;
+    setTipoActivoSaving(true);
+    try {
+      const id = tipoActivoForm.id || idCatalogo(empresaId, tipoActivoForm.nombre);
+      await setDoc(doc(db, 'tiposActivoComodato', id), {
+        empresaId, nombre: tipoActivoForm.nombre.trim(),
+        activo: tipoActivoForm.activo ?? true,
+        creadoEn: tipoActivoForm.creadoEn || new Date().toISOString(),
+      });
+      setTipoActivoForm(null);
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      setTipoActivoSaving(false);
+    }
+  }
+
+  async function toggleTipoActivo(t) {
+    await updateDoc(doc(db, 'tiposActivoComodato', t.id), { activo: !t.activo });
+  }
   const { umbrales, setUmbrales, guardarUmbrales, saving: savingU, loading: loadingU } = useUmbrales(empresaId);
 
   // ---- Categorías de gasto ----
@@ -820,6 +847,34 @@ export default function GestionPage() {
         </table>
       </div>
 
+      {/* Section: Tipos de activo comodato */}
+      <div className={styles.card} style={{ marginTop: 20 }}>
+        <div className={styles.cardHeader}>
+          <h3 className={styles.cardTitle}>Tipos de activo (comodato)</h3>
+          <Btn onClick={() => setTipoActivoForm({ nombre: '' })}>+ Añadir tipo</Btn>
+        </div>
+        <table className={styles.table}>
+          <thead><tr><th>Nombre</th><th>Estado</th><th></th></tr></thead>
+          <tbody>
+            {tiposActivo.map(t => (
+              <tr key={t.id}>
+                <td className={styles.bold}>{t.nombre}</td>
+                <td>{t.activo ? 'Activo' : <span className={styles.muted}>Desactivado</span>}</td>
+                <td className={styles.actionCell}>
+                  <button className={styles.iconBtn} onClick={() => setTipoActivoForm(t)} title="Editar">✏️</button>
+                  <button className={styles.iconBtn} onClick={() => toggleTipoActivo(t)} title={t.activo ? 'Desactivar' : 'Activar'}>
+                    {t.activo ? '⏸️' : '▶️'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {!tiposActivo.length && (
+              <tr><td colSpan={3} className={styles.empty}>No hay tipos de activo todavía (ej. Exhibidor, Garrafón)</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
       {/* Section: Umbrales IA */}
       <div className={styles.card} style={{ marginTop: 20 }}>
         <h3 className={styles.cardTitle}>🎯 Configurar Umbrales de Análisis IA</h3>
@@ -1019,6 +1074,20 @@ export default function GestionPage() {
               <Btn variant="secondary" onClick={() => setBenForm(null)}>Cancelar</Btn>
               <Btn onClick={guardarBeneficiario} disabled={benSaving || !benForm.nombre?.trim()}>
                 {benSaving ? 'Guardando...' : 'Guardar'}
+              </Btn>
+            </div>
+          </>
+        )}
+      </Modal>
+
+      <Modal open={!!tipoActivoForm} onClose={() => setTipoActivoForm(null)} title={tipoActivoForm?.id ? 'Editar tipo de activo' : 'Nuevo tipo de activo'}>
+        {tipoActivoForm && (
+          <>
+            <FormField label="Nombre" value={tipoActivoForm.nombre} onChange={e => setTipoActivoForm(f => ({ ...f, nombre: e.target.value }))} />
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
+              <Btn variant="secondary" onClick={() => setTipoActivoForm(null)}>Cancelar</Btn>
+              <Btn onClick={guardarTipoActivo} disabled={tipoActivoSaving || !tipoActivoForm.nombre?.trim()}>
+                {tipoActivoSaving ? 'Guardando...' : 'Guardar'}
               </Btn>
             </div>
           </>

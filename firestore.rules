@@ -105,6 +105,24 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Comodato — catálogo de tipos de activo (mismo patrón que categoriasGasto)
+    // y ledger de movimientos entre ubicaciones (cliente/camion/planta/externo).
+    // El conductor SÍ escribe aquí (caso de uso central, a diferencia de
+    // gastosEmpresa). Ledger create-only, nunca update/delete.
+    match /tiposActivoComodato/{id} {
+      allow read: if authed() && resource.data.empresaId == myEmpresaId();
+      allow create, update: if isAdmin() && request.resource.data.empresaId == myEmpresaId();
+      allow delete: if false;
+    }
+
+    match /comodatoMovimientos/{id} {
+      allow read: if authed() && resource.data.empresaId == myEmpresaId();
+      allow create: if authed() && request.resource.data.empresaId == myEmpresaId()
+        && get(/databases/$(database)/documents/tiposActivoComodato/$(request.resource.data.tipoActivoId)).data.empresaId == myEmpresaId()
+        && get(/databases/$(database)/documents/tiposActivoComodato/$(request.resource.data.tipoActivoId)).data.activo == true;
+      allow update, delete: if false;
+    }
+
     // Catálogos de gasto administrables por empresa — ID determinístico
     // ({empresaId}_{slug}) para que gastosEmpresa pueda validar con get()
     // sin necesitar una query. Nunca se eliminan, solo se desactivan

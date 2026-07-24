@@ -1,6 +1,30 @@
 {
   "indexes": [
     {
+      "collectionGroup": "comodatoMovimientos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "origen.ubicacionId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "comodatoMovimientos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "destino.ubicacionId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "tiposActivoComodato",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "nombre", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "rutas",
       "queryScope": "COLLECTION",
       "fields": [
