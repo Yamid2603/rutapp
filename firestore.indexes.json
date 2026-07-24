@@ -1,6 +1,15 @@
 {
   "indexes": [
     {
+      "_comment": "useComodatoMovimientos (useCollection.js) — where(empresaId) + orderBy(creadoEn desc). Faltaba: ComodatoPage quedaba con tabla vacía en producción sin este índice.",
+      "collectionGroup": "comodatoMovimientos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "creadoEn", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "comodatoMovimientos",
       "queryScope": "COLLECTION",
       "fields": [

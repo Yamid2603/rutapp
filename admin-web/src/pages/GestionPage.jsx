@@ -850,7 +850,7 @@ export default function GestionPage() {
       {/* Section: Tipos de activo comodato */}
       <div className={styles.card} style={{ marginTop: 20 }}>
         <div className={styles.cardHeader}>
-          <h3 className={styles.cardTitle}>Tipos de activo (comodato)</h3>
+          <h3 className={styles.cardTitle}>Tipos de activo en préstamo</h3>
           <Btn onClick={() => setTipoActivoForm({ nombre: '' })}>+ Añadir tipo</Btn>
         </div>
         <table className={styles.table}>

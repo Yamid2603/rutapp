@@ -31,7 +31,7 @@ export default function ComodatoPage() {
   const { docs: camiones } = useCamiones(empresaId);
   const { docs: clientes } = useClientes(empresaId);
 
-  const [form, setForm] = useState({ origenTipo: 'externo', origenId: '', destinoTipo: 'planta', destinoId: '', tipoActivoId: '', estado: 'bueno', cantidad: '1' });
+  const [form, setForm] = useState({ origenTipo: 'externo', origenId: '', estadoOrigen: 'bueno', destinoTipo: 'planta', destinoId: '', tipoActivoId: '', estado: 'bueno', cantidad: '1' });
   const [saving, setSaving] = useState(false);
 
   const saldos = useMemo(() => calcularSaldos(movimientos), [movimientos]);
@@ -59,6 +59,27 @@ export default function ComodatoPage() {
     if (!form.tipoActivoId || !cantidad || cantidad <= 0) return;
     if (form.destinoTipo !== 'planta' && !form.destinoId) return;
     if (form.origenTipo !== 'externo' && form.origenTipo !== 'planta' && !form.origenId) return;
+
+    const origenId = form.origenTipo === 'externo' ? null : form.origenTipo === 'planta' ? empresaId : form.origenId;
+
+    // Validar contra el saldo real disponible en origen — nunca aceptar en
+    // silencio un movimiento que dejaría el ledger en negativo. 'externo'
+    // no tiene saldo que validar (es una alta nueva al sistema).
+    // LIMITACIÓN ACEPTADA (no resuelta, no una Cloud Function todavía):
+    // esta validación es solo del lado del cliente. Firestore rules no
+    // verifica saldo suficiente, solo que tipoActivoId sea válido/activo
+    // de la empresa — un cliente modificado o un script directo contra
+    // Firestore podría saltarse este chequeo. Riesgo bajo hoy (solo admin
+    // y conductor tocan esto); si el proyecto crece a más usuarios, mover
+    // esta validación a una Cloud Function (transacción server-side).
+    if (form.origenTipo !== 'externo') {
+      const disponible = saldos[origenId]?.[form.tipoActivoId]?.[form.estadoOrigen] ?? 0;
+      if (cantidad > disponible) {
+        alert(`No hay suficientes unidades en estado "${form.estadoOrigen}" en el origen — disponibles: ${disponible}, solicitadas: ${cantidad}.`);
+        return;
+      }
+    }
+
     setSaving(true);
     try {
       await addDoc(collection(db, 'comodatoMovimientos'), {
@@ -66,8 +87,8 @@ export default function ComodatoPage() {
         tipoActivoId: form.tipoActivoId,
         origen: {
           ubicacionTipo: form.origenTipo,
-          ubicacionId: form.origenTipo === 'externo' ? null : form.origenTipo === 'planta' ? empresaId : form.origenId,
-          estado: 'bueno',
+          ubicacionId: origenId,
+          estado: form.estadoOrigen,
         },
         destino: {
           ubicacionTipo: form.destinoTipo,
@@ -91,7 +112,7 @@ export default function ComodatoPage() {
     <div>
       <div className={styles.topBar}>
         <div>
-          <h1 className={styles.pageTitle}>Comodato</h1>
+          <h1 className={styles.pageTitle}>Activos en Préstamo</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>
             Exhibidores, garrafones y demás activos en préstamo — planta, camiones y clientes.
             El conductor registra movimientos cliente/camión desde su celular; aquí se registran
@@ -112,6 +133,10 @@ export default function ComodatoPage() {
           {form.origenTipo === 'camion' && (
             <Select label="Camión origen" value={form.origenId} onChange={v => setForm(f => ({ ...f, origenId: v }))}
               options={[{ value: '', label: 'Selecciona...' }, ...camiones.map(c => ({ value: c.id, label: c.nombre }))]} />
+          )}
+          {form.origenTipo !== 'externo' && (
+            <Select label="Estado en origen" value={form.estadoOrigen} onChange={v => setForm(f => ({ ...f, estadoOrigen: v }))}
+              options={ESTADOS.map(e => ({ value: e, label: e }))} />
           )}
           <Select label="Destino" value={form.destinoTipo}
             onChange={v => setForm(f => ({ ...f, destinoTipo: v, destinoId: '' }))}

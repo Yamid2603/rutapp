@@ -13,7 +13,7 @@ const NAV = [
   { to: '/admin/cuadre',    Icon: Wallet,           label: 'Cuadre del día' },
   { to: '/admin/gastos-empresa', Icon: Receipt,     label: 'Gastos de empresa' },
   { to: '/admin/balance',   Icon: ChartNoAxesCombined, label: 'Balance' },
-  { to: '/admin/comodato',  Icon: Boxes,               label: 'Comodato' },
+  { to: '/admin/comodato',  Icon: Boxes,               label: 'Activos en Préstamo' },
   { to: '/admin/zonas',     Icon: CalendarDays,     label: 'Zonas & Carga' },
   { to: '/admin/gestion',   Icon: Settings,         label: 'Gestión' },
   { to: '/admin/analisis',  Icon: Sparkles,         label: 'Análisis IA' },
