@@ -121,3 +121,52 @@ export function calcularBalance({ transacciones, gastosEmpresa, rutas, categoria
 
   return { filas: filasArray, resumenAnual, nombresCategoria };
 }
+
+/**
+ * Detalle plano de gastos (una fila por gasto, no agregado por mes) —
+ * combina gastosEmpresa + rutas[].gastos[] igual que calcularBalance, pero
+ * para exportar/auditar línea por línea en vez de sumar totales.
+ * @param {Object[]} beneficiarios - catálogo beneficiariosGasto de la empresa
+ * @param {Object[]} camiones - para mostrar placa en gastos de ruta
+ */
+export function detalleGastos({ gastosEmpresa, rutas, categorias, beneficiarios, camiones, periodoDesde, periodoHasta }) {
+  const dentroDelRango = (fecha) => fecha && fecha >= periodoDesde && fecha <= periodoHasta;
+  const catPorId = Object.fromEntries(categorias.map(c => [c.id, c]));
+  const catPorNombreLower = Object.fromEntries(categorias.map(c => [c.nombre.toLowerCase(), c.nombre]));
+  const benPorId = Object.fromEntries(beneficiarios.map(b => [b.id, b]));
+  const camionPorId = Object.fromEntries(camiones.map(c => [c.id, c]));
+
+  const filas = [];
+
+  for (const g of gastosEmpresa) {
+    if (!dentroDelRango(g.fecha)) continue;
+    filas.push({
+      Fecha: g.fecha,
+      Categoría: catPorId[g.categoriaId]?.nombre || 'Sin clasificar',
+      Beneficiario: benPorId[g.beneficiarioId]?.nombre || '—',
+      Monto: g.monto || 0,
+      Origen: 'Empresa',
+    });
+  }
+
+  for (const ruta of rutas) {
+    if (!dentroDelRango(ruta.fecha)) continue;
+    const camion = camionPorId[ruta.camionId];
+    for (const g of ruta.gastos || []) {
+      const monto = g.valor ?? g.monto ?? 0;
+      const tipo = g.tipo ?? g.categoria;
+      const nombreMapeado = MAPEO_RUTA_A_EMPRESA[tipo];
+      const nombreReal = nombreMapeado ? catPorNombreLower[nombreMapeado] : null;
+      filas.push({
+        Fecha: ruta.fecha,
+        Categoría: nombreReal || 'Sin clasificar',
+        Beneficiario: '—',
+        Monto: monto,
+        Origen: `Camión ${camion?.placa || ruta.camionId || '—'}`,
+      });
+    }
+  }
+
+  filas.sort((a, b) => (a.Fecha < b.Fecha ? -1 : a.Fecha > b.Fecha ? 1 : 0));
+  return filas;
+}

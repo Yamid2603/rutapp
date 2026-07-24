@@ -17,7 +17,7 @@ const EMPTY = {
   // tipo 'ruta' = cliente normal de reparto (default). 'facturacion' = cliente
   // grande con facturación electrónica por período (ver export en Gestión).
   // Clientes existentes sin este campo se tratan como 'ruta' en todo el código.
-  tipo: 'ruta', diaFacturacion: '', nit: '',
+  tipo: 'ruta', diaFacturacion: '', nit: '', diasPlazoPago: '',
 };
 
 export default function ClientesPage() {
@@ -47,7 +47,7 @@ export default function ClientesPage() {
     });
     // Clientes creados antes de este campo no tienen 'tipo' guardado — se
     // asumen 'ruta' (comportamiento actual, nada cambia hasta que se reclasifiquen).
-    setForm({ ...c, preciosCliente, tipo: c.tipo || 'ruta', diaFacturacion: c.diaFacturacion ?? '', nit: c.nit || '' });
+    setForm({ ...c, preciosCliente, tipo: c.tipo || 'ruta', diaFacturacion: c.diaFacturacion ?? '', nit: c.nit || '', diasPlazoPago: c.diasPlazoPago ?? '' });
     setFotoFile(null);
     setFotoPreview(null);
     setModal(c);
@@ -87,6 +87,8 @@ export default function ClientesPage() {
         diaFacturacion: form.tipo === 'facturacion' && form.diaFacturacion
           ? Number(form.diaFacturacion) : null,
         nit: form.nit?.trim() || null,
+        diasPlazoPago: form.tipo === 'facturacion' && form.diasPlazoPago
+          ? Number(form.diasPlazoPago) : null,
       };
       delete payload.id;
 
@@ -208,7 +210,7 @@ export default function ClientesPage() {
         <Select
           label="Tipo de cliente"
           value={form.tipo || 'ruta'}
-          onChange={v => setForm({ ...form, tipo: v, diaFacturacion: v === 'facturacion' ? form.diaFacturacion : '' })}
+          onChange={v => setForm({ ...form, tipo: v, diaFacturacion: v === 'facturacion' ? form.diaFacturacion : '', diasPlazoPago: v === 'facturacion' ? form.diasPlazoPago : '' })}
           options={[
             { value: 'ruta', label: 'Ruta (reparto normal)' },
             { value: 'facturacion', label: 'Facturación electrónica por período' },
@@ -216,12 +218,20 @@ export default function ClientesPage() {
         />
         <FormField label="NIT (opcional)" value={form.nit || ''} onChange={e => setForm({ ...form, nit: e.target.value })} />
         {form.tipo === 'facturacion' && (
-          <FormField
-            label="Día de facturación del mes (1-28)"
-            type="number" min="1" max="28"
-            value={form.diaFacturacion || ''}
-            onChange={e => setForm({ ...form, diaFacturacion: e.target.value })}
-          />
+          <>
+            <FormField
+              label="Día de facturación del mes (1-28)"
+              type="number" min="1" max="28"
+              value={form.diaFacturacion || ''}
+              onChange={e => setForm({ ...form, diaFacturacion: e.target.value })}
+            />
+            <FormField
+              label="Plazo de pago (días, default 30 si se deja vacío)"
+              type="number" min="1"
+              value={form.diasPlazoPago || ''}
+              onChange={e => setForm({ ...form, diasPlazoPago: e.target.value })}
+            />
+          </>
         )}
 
         <FormField

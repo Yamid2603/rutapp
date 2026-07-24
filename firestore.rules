@@ -102,7 +102,24 @@ service cloud.firestore {
     match /facturasGeneradas/{id} {
       allow read: if isAdmin() && resource.data.empresaId == myEmpresaId();
       allow create: if isAdmin() && request.resource.data.empresaId == myEmpresaId();
-      allow update, delete: if false;
+      // Única transición permitida: marcar como pagada. Todo lo demás del
+      // sello original (transaccionIds, total, clienteId, fechas,
+      // generadoPor, fechaVencimiento) es inmutable — el pago SOLO puede
+      // tocar estado/fechaPago/pagadoPor. No hay camino de vuelta a
+      // 'facturada' ni forma de saltarse el estado 'facturada' inicial.
+      allow update: if isAdmin() && resource.data.empresaId == myEmpresaId()
+        && request.resource.data.empresaId == resource.data.empresaId
+        && request.resource.data.clienteId == resource.data.clienteId
+        && request.resource.data.transaccionIds == resource.data.transaccionIds
+        && request.resource.data.total == resource.data.total
+        && request.resource.data.periodoDesde == resource.data.periodoDesde
+        && request.resource.data.periodoHasta == resource.data.periodoHasta
+        && request.resource.data.fechaGeneracion == resource.data.fechaGeneracion
+        && request.resource.data.generadoPor == resource.data.generadoPor
+        && request.resource.data.fechaVencimiento == resource.data.fechaVencimiento
+        && resource.data.estado == 'facturada'
+        && request.resource.data.estado == 'pagada';
+      allow delete: if false;
     }
 
     // Comodato — catálogo de tipos de activo (mismo patrón que categoriasGasto)

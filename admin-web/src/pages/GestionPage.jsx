@@ -5,12 +5,13 @@ import { httpsCallable } from 'firebase/functions';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { auth, db, storage, functions } from '../config/firebase';
 import { useAuth } from '../context/AuthContext';
-import { useCamiones, useUsuarios, useClientes, useRutas, useCategoriasGasto, useBeneficiariosGasto, useGastosEmpresa, useTiposActivoComodato } from '../hooks/useCollection';
+import { useCamiones, useUsuarios, useClientes, useProductos, useRutas, useCategoriasGasto, useBeneficiariosGasto, useGastosEmpresa, useTiposActivoComodato } from '../hooks/useCollection';
 import { useUmbrales } from '../hooks/useAnalisisIA';
 import { downloadCSV } from '../utils/csv';
 import { money, validarTelefono } from '../utils/format';
 import { idCatalogo } from '../utils/slug';
-import { calcularBalance } from '../utils/balanceHelpers';
+import { calcularBalance, detalleGastos } from '../utils/balanceHelpers';
+import { calcularVencimiento, estadoFactura } from '../utils/facturacionHelpers';
 import * as XLSX from 'xlsx';
 import Modal from '../components/Modal';
 import FormField, { Select, Btn } from '../components/FormField';
@@ -22,6 +23,7 @@ export default function GestionPage() {
   const { docs: camiones } = useCamiones(empresaId);
   const { docs: usuarios } = useUsuarios(empresaId);
   const { docs: clientes } = useClientes(empresaId);
+  const { docs: productos } = useProductos(empresaId);
   const { docs: rutas } = useRutas(empresaId);
   const { docs: categoriasGasto } = useCategoriasGasto(empresaId);
   const { docs: beneficiariosGasto } = useBeneficiariosGasto(empresaId);
@@ -185,42 +187,67 @@ export default function GestionPage() {
         Utilidad: balance.resumenAnual.utilidad,
       });
 
-      // ── Pestaña Clientes Facturación Electrónica — TODOS, incluso sin facturas aún ──
+      // ── Pestaña Cartera — una fila por factura generada (histórico completo, el filtro va en Excel) ──
       const clientesFacturacion = clientes.filter(c => c.tipo === 'facturacion');
-      const filasClientes = [];
-      for (const c of clientesFacturacion) {
-        const facturasSnap = await getDocs(query(
-          collection(db, 'facturasGeneradas'),
-          where('empresaId', '==', empresaId),
-          where('clienteId', '==', c.id),
-        ));
-        const facturas = facturasSnap.docs.map(d => d.data());
-        const ultimaFecha = facturas.length
-          ? facturas.reduce((max, f) => f.fechaGeneracion > max ? f.fechaGeneracion : max, facturas[0].fechaGeneracion)
-          : null;
-        const totalPeriodo = facturas
-          .filter(f => dentroDelRango((f.fechaGeneracion || '').split('T')[0]))
-          .reduce((s, f) => s + (f.total || 0), 0);
-        const totalHistorico = facturas.reduce((s, f) => s + (f.total || 0), 0);
-
-        filasClientes.push({
-          Nombre: c.nombre,
-          NIT: c.nit || '—',
-          'Día de facturación': c.diaFacturacion || '—',
-          'Última factura generada': ultimaFecha ? ultimaFecha.split('T')[0] : 'Ninguna',
-          [`Total facturado (${balDesde} a ${balHasta})`]: totalPeriodo,
-          'Total histórico facturado': totalHistorico,
+      const clientesPorId = Object.fromEntries(clientesFacturacion.map(c => [c.id, c]));
+      const facturasSnap = clientesFacturacion.length
+        ? await getDocs(query(collection(db, 'facturasGeneradas'), where('empresaId', '==', empresaId)))
+        : { docs: [] };
+      const filasCartera = facturasSnap.docs
+        .map(d => d.data())
+        .filter(f => clientesPorId[f.clienteId])
+        .map(f => {
+          const c = clientesPorId[f.clienteId];
+          return {
+            Cliente: c.nombre,
+            NIT: c.nit || '—',
+            Período: `${f.periodoDesde} a ${f.periodoHasta}`,
+            'Fecha generación': (f.fechaGeneracion || '').split('T')[0],
+            Total: f.total || 0,
+            Estado: estadoFactura(f),
+            'Fecha vencimiento': f.fechaVencimiento || '—',
+            'Fecha pago': f.fechaPago || '—',
+          };
         });
-      }
 
-      // ── Armar el .xlsx con ambas pestañas ──
+      // ── Pestaña Clientes — ficha con precios pactados, TODOS incluso sin facturas aún ──
+      const filasClientes = clientesFacturacion.map(c => ({
+        Nombre: c.nombre,
+        NIT: c.nit || '—',
+        'Día de facturación': c.diaFacturacion || '—',
+        'Plazo de pago (días)': c.diasPlazoPago || 30,
+        ...Object.fromEntries(productos.map(p => [p.nombre, c.preciosCliente?.[p.id] || '—'])),
+      }));
+
+      // ── Pestaña Gastos — detalle plano gastosEmpresa + rutas.gastos[] ──
+      const filasGastos = detalleGastos({
+        gastosEmpresa: gastosEmpresaFiltrado, rutas: rutasFiltradas,
+        categorias: categoriasGasto, beneficiarios: beneficiariosGasto, camiones,
+        periodoDesde: balDesde, periodoHasta: balHasta,
+      });
+
+      // ── Armar el .xlsx con las 4 pestañas ──
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filasBalance), 'Balance');
+
+      const wsCartera = XLSX.utils.json_to_sheet(
+        filasCartera.length ? filasCartera : [{ Cliente: 'Sin facturas generadas' }],
+      );
+      if (filasCartera.length) wsCartera['!autofilter'] = { ref: wsCartera['!ref'] };
+      XLSX.utils.book_append_sheet(wb, wsCartera, 'Cartera');
+
       XLSX.utils.book_append_sheet(
         wb,
         XLSX.utils.json_to_sheet(filasClientes.length ? filasClientes : [{ Nombre: 'Sin clientes tipo Facturación electrónica' }]),
-        'Clientes Facturación',
+        'Clientes',
       );
+
+      XLSX.utils.book_append_sheet(
+        wb,
+        XLSX.utils.json_to_sheet(filasGastos.length ? filasGastos : [{ Fecha: 'Sin gastos en el período' }]),
+        'Gastos',
+      );
+
       XLSX.writeFile(wb, `contabilidad-${balDesde}-a-${balHasta}.xlsx`);
     } catch (err) {
       alert('Error: ' + err.message);
@@ -239,6 +266,49 @@ export default function GestionPage() {
   const [facDesde, setFacDesde] = useState(primerYUltimoDiaMesActual().primero);
   const [facHasta, setFacHasta] = useState(primerYUltimoDiaMesActual().ultimo);
   const [facGenerando, setFacGenerando] = useState(false);
+
+  // ---- Facturas pendientes de pago (marcar como pagada) ----
+  const [facturasPendientes, setFacturasPendientes] = useState(null); // null = no cargadas aún
+  const [facturasPendientesLoading, setFacturasPendientesLoading] = useState(false);
+  const [marcandoPagoId, setMarcandoPagoId] = useState(null);
+
+  async function cargarFacturasPendientes() {
+    setFacturasPendientesLoading(true);
+    try {
+      const snap = await getDocs(query(
+        collection(db, 'facturasGeneradas'),
+        where('empresaId', '==', empresaId),
+        where('estado', '==', 'facturada'),
+      ));
+      const clientesPorId = Object.fromEntries(clientes.map(c => [c.id, c]));
+      const lista = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .filter(f => clientesPorId[f.clienteId])
+        .map(f => ({ ...f, clienteNombre: clientesPorId[f.clienteId].nombre }))
+        .sort((a, b) => (a.fechaVencimiento || '').localeCompare(b.fechaVencimiento || ''));
+      setFacturasPendientes(lista);
+    } catch (err) {
+      alert('Error al cargar facturas pendientes: ' + err.message);
+    } finally {
+      setFacturasPendientesLoading(false);
+    }
+  }
+
+  async function marcarComoPagada(facturaId) {
+    setMarcandoPagoId(facturaId);
+    try {
+      await updateDoc(doc(db, 'facturasGeneradas', facturaId), {
+        estado: 'pagada',
+        fechaPago: new Date().toISOString().split('T')[0],
+        pagadoPor: auth.currentUser?.uid ?? null,
+      });
+      setFacturasPendientes(prev => prev.filter(f => f.id !== facturaId));
+    } catch (err) {
+      alert('Error al marcar como pagada: ' + err.message);
+    } finally {
+      setMarcandoPagoId(null);
+    }
+  }
 
   async function exportFacturacion() {
     setFacGenerando(true);
@@ -305,13 +375,18 @@ export default function GestionPage() {
         granTotal += totalCliente;
 
         // Sellar estas transacciones como ya facturadas — sin tocar transacciones (inmutable)
+        const fechaGeneracion = new Date().toISOString();
         await addDoc(collection(db, 'facturasGeneradas'), {
           empresaId, clienteId: cliente.id,
           periodoDesde: facDesde, periodoHasta: facHasta,
-          fechaGeneracion: new Date().toISOString(),
+          fechaGeneracion,
           transaccionIds: transaccionIdsIncluidas,
           total: totalCliente,
           generadoPor: auth.currentUser?.uid ?? null,
+          estado: 'facturada',
+          fechaVencimiento: calcularVencimiento(fechaGeneracion, cliente.diasPlazoPago),
+          fechaPago: null,
+          pagadoPor: null,
         });
       }
 
@@ -765,7 +840,7 @@ export default function GestionPage() {
             </Btn>
           </div>
           <p style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 6 }}>
-            El .xlsx usa el mismo rango Desde/Hasta de arriba, con pestañas "Balance" y "Clientes Facturación".
+            El .xlsx usa el mismo rango Desde/Hasta de arriba, con pestañas "Balance", "Cartera", "Clientes" y "Gastos".
           </p>
         </div>
 
@@ -783,6 +858,53 @@ export default function GestionPage() {
                 {facGenerando ? 'Generando...' : '⬇ Exportar facturación'}
               </Btn>
             </div>
+          </div>
+        )}
+
+        {modulosHabilitados.includes('facturacion') && (
+          <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--cream-border)' }}>
+            <div className={styles.cardHeader}>
+              <div className={styles.cardTitle} style={{ fontSize: 14 }}>Facturas pendientes de pago</div>
+              <Btn variant="secondary" onClick={cargarFacturasPendientes} disabled={facturasPendientesLoading}>
+                {facturasPendientesLoading ? 'Cargando...' : '🔄 Ver facturas pendientes'}
+              </Btn>
+            </div>
+            {facturasPendientes !== null && (
+              facturasPendientes.length === 0 ? (
+                <p style={{ fontSize: 12.5, color: 'var(--text-muted)' }}>No hay facturas pendientes de pago.</p>
+              ) : (
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Cliente</th><th>Período</th><th>Total</th>
+                      <th>Fecha vencimiento</th><th>Estado</th><th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {facturasPendientes.map(f => {
+                      const estado = estadoFactura(f);
+                      const vencida = estado === 'Vencida';
+                      return (
+                        <tr key={f.id}>
+                          <td className={styles.bold}>{f.clienteNombre}</td>
+                          <td>{f.periodoDesde} a {f.periodoHasta}</td>
+                          <td>{money(f.total)}</td>
+                          <td style={vencida ? { color: 'var(--danger)', fontWeight: 600 } : undefined}>
+                            {f.fechaVencimiento || '—'}
+                          </td>
+                          <td>{estado}</td>
+                          <td>
+                            <Btn onClick={() => marcarComoPagada(f.id)} disabled={marcandoPagoId === f.id}>
+                              {marcandoPagoId === f.id ? 'Guardando...' : 'Marcar como pagada'}
+                            </Btn>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )
+            )}
           </div>
         )}
       </div>
