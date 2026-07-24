@@ -11,6 +11,7 @@ import { downloadCSV } from '../utils/csv';
 import { money, validarTelefono } from '../utils/format';
 import { idCatalogo } from '../utils/slug';
 import { calcularBalance } from '../utils/balanceHelpers';
+import * as XLSX from 'xlsx';
 import Modal from '../components/Modal';
 import FormField, { Select, Btn } from '../components/FormField';
 import UbicacionPicker from '../components/UbicacionPicker';
@@ -120,6 +121,84 @@ export default function GestionPage() {
       alert('Error: ' + err.message);
     } finally {
       setBalGenerando(false);
+    }
+  }
+
+  // ---- Contabilidad completa (.xlsx, varias pestañas) — mismo Desde/Hasta que Balance ----
+  const [xlsxGenerando, setXlsxGenerando] = useState(false);
+
+  async function exportContabilidadXLSX() {
+    setXlsxGenerando(true);
+    try {
+      const dentroDelRango = (fecha) => fecha && fecha >= balDesde && fecha <= balHasta;
+
+      // ── Pestaña Balance — mismo cálculo que la pantalla/export CSV ──
+      const txSnap = await getDocs(query(collection(db, 'transacciones'), where('empresaId', '==', empresaId)));
+      const transacciones = txSnap.docs.map(d => d.data()).filter(t => dentroDelRango(t.fecha));
+      const gastosEmpresaFiltrado = gastosEmpresaDocs.filter(g => dentroDelRango(g.fecha));
+      const rutasFiltradas = rutas.filter(r => dentroDelRango(r.fecha));
+      const balance = calcularBalance({
+        transacciones, gastosEmpresa: gastosEmpresaFiltrado, rutas: rutasFiltradas,
+        categorias: categoriasGasto, periodoDesde: balDesde, periodoHasta: balHasta,
+      });
+      const filasBalance = balance.filas.map(f => ({
+        Mes: f.mes,
+        ...Object.fromEntries(balance.nombresCategoria.map(n => [n, f.porCategoria[n] || 0])),
+        'Sin clasificar': f.sinClasificar,
+        Ventas: f.ventas,
+        Gastos: f.gastosTotal,
+        Utilidad: f.utilidad,
+      }));
+      filasBalance.push({
+        Mes: 'TOTAL',
+        ...Object.fromEntries(balance.nombresCategoria.map(n => [n, balance.resumenAnual.porCategoria[n]])),
+        'Sin clasificar': balance.resumenAnual.sinClasificar,
+        Ventas: balance.resumenAnual.ventas,
+        Gastos: balance.resumenAnual.gastosTotal,
+        Utilidad: balance.resumenAnual.utilidad,
+      });
+
+      // ── Pestaña Clientes Facturación Electrónica — TODOS, incluso sin facturas aún ──
+      const clientesFacturacion = clientes.filter(c => c.tipo === 'facturacion');
+      const filasClientes = [];
+      for (const c of clientesFacturacion) {
+        const facturasSnap = await getDocs(query(
+          collection(db, 'facturasGeneradas'),
+          where('empresaId', '==', empresaId),
+          where('clienteId', '==', c.id),
+        ));
+        const facturas = facturasSnap.docs.map(d => d.data());
+        const ultimaFecha = facturas.length
+          ? facturas.reduce((max, f) => f.fechaGeneracion > max ? f.fechaGeneracion : max, facturas[0].fechaGeneracion)
+          : null;
+        const totalPeriodo = facturas
+          .filter(f => dentroDelRango((f.fechaGeneracion || '').split('T')[0]))
+          .reduce((s, f) => s + (f.total || 0), 0);
+        const totalHistorico = facturas.reduce((s, f) => s + (f.total || 0), 0);
+
+        filasClientes.push({
+          Nombre: c.nombre,
+          NIT: c.nit || '—',
+          'Día de facturación': c.diaFacturacion || '—',
+          'Última factura generada': ultimaFecha ? ultimaFecha.split('T')[0] : 'Ninguna',
+          [`Total facturado (${balDesde} a ${balHasta})`]: totalPeriodo,
+          'Total histórico facturado': totalHistorico,
+        });
+      }
+
+      // ── Armar el .xlsx con ambas pestañas ──
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(filasBalance), 'Balance');
+      XLSX.utils.book_append_sheet(
+        wb,
+        XLSX.utils.json_to_sheet(filasClientes.length ? filasClientes : [{ Nombre: 'Sin clientes tipo Facturación electrónica' }]),
+        'Clientes Facturación',
+      );
+      XLSX.writeFile(wb, `contabilidad-${balDesde}-a-${balHasta}.xlsx`);
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      setXlsxGenerando(false);
     }
   }
 
@@ -652,9 +731,15 @@ export default function GestionPage() {
             <FormField label="Desde" type="date" value={balDesde} onChange={e => setBalDesde(e.target.value)} />
             <FormField label="Hasta" type="date" value={balHasta} onChange={e => setBalHasta(e.target.value)} />
             <Btn onClick={exportBalance} disabled={balGenerando}>
-              {balGenerando ? 'Generando...' : '⬇ Exportar balance'}
+              {balGenerando ? 'Generando...' : '⬇ Exportar balance (CSV)'}
+            </Btn>
+            <Btn variant="secondary" onClick={exportContabilidadXLSX} disabled={xlsxGenerando}>
+              {xlsxGenerando ? 'Generando...' : '⬇ Contabilidad completa (.xlsx)'}
             </Btn>
           </div>
+          <p style={{ fontSize: 11.5, color: 'var(--text-muted)', marginTop: 6 }}>
+            El .xlsx usa el mismo rango Desde/Hasta de arriba, con pestañas "Balance" y "Clientes Facturación".
+          </p>
         </div>
 
         <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--cream-border)' }}>
