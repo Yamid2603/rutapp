@@ -70,6 +70,23 @@
       ]
     },
     {
+      "collectionGroup": "facturasGeneradas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "clienteId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "transacciones",
+      "_comment": "GestionPage.exportFacturacion — transacciones de un cliente específico",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "empresaId", "order": "ASCENDING" },
+        { "fieldPath": "clienteId", "order": "ASCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "operacionesFallidas",
       "queryScope": "COLLECTION",
       "fields": [

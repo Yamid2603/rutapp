@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { doc, setDoc, updateDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, setDoc, updateDoc, getDoc, addDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { httpsCallable } from 'firebase/functions';
 import { sendPasswordResetEmail } from 'firebase/auth';
@@ -76,6 +76,109 @@ export default function GestionPage() {
 
   async function toggleBeneficiario(ben) {
     await updateDoc(doc(db, 'beneficiariosGasto', ben.id), { activo: !ben.activo });
+  }
+
+  // ---- Facturación por período (clientes tipo 'facturacion') ----
+  function primerYUltimoDiaMesActual() {
+    const hoy = new Date();
+    const primero = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString().split('T')[0];
+    const ultimo = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).toISOString().split('T')[0];
+    return { primero, ultimo };
+  }
+  const [facDesde, setFacDesde] = useState(primerYUltimoDiaMesActual().primero);
+  const [facHasta, setFacHasta] = useState(primerYUltimoDiaMesActual().ultimo);
+  const [facGenerando, setFacGenerando] = useState(false);
+
+  async function exportFacturacion() {
+    setFacGenerando(true);
+    try {
+      const diaDesde = Number(facDesde.split('-')[2]);
+      const diaHasta = Number(facHasta.split('-')[2]);
+      const clientesFacturables = clientes.filter(c =>
+        c.tipo === 'facturacion' && c.diaFacturacion >= diaDesde && c.diaFacturacion <= diaHasta
+      );
+      if (!clientesFacturables.length) {
+        alert('No hay clientes tipo "Facturación electrónica" con día de facturación en ese rango.');
+        return;
+      }
+
+      const rows = [];
+      let granTotal = 0;
+      let transaccionesSinDetalle = 0;
+
+      for (const cliente of clientesFacturables) {
+        // Transacciones ya incluidas en una factura anterior — no se repiten
+        const facturasSnap = await getDocs(query(
+          collection(db, 'facturasGeneradas'),
+          where('empresaId', '==', empresaId),
+          where('clienteId', '==', cliente.id),
+        ));
+        const yaFacturadas = new Set(facturasSnap.docs.flatMap(d => d.data().transaccionIds || []));
+
+        const txSnap = await getDocs(query(
+          collection(db, 'transacciones'),
+          where('empresaId', '==', empresaId),
+          where('clienteId', '==', cliente.id),
+        ));
+
+        const txPendientes = txSnap.docs.filter(d => !yaFacturadas.has(d.id));
+        if (!txPendientes.length) continue;
+
+        let totalCliente = 0;
+        const transaccionIdsIncluidas = [];
+        for (const txDoc of txPendientes) {
+          const tx = txDoc.data();
+          transaccionIdsIncluidas.push(txDoc.id);
+          if (!tx.detalle || !tx.detalle.length) {
+            // Venta previa a que existiera el detalle por producto — se incluye
+            // igual (no se pierde de la factura) pero sin desglose de línea.
+            transaccionesSinDetalle++;
+            rows.push({
+              Cliente: cliente.nombre, NIT: cliente.nit || '—', Fecha: tx.fecha,
+              Producto: '(sin detalle — venta anterior)', Cantidad: '—', 'Precio unitario': '—',
+              Subtotal: tx.totalVenta || 0,
+            });
+            totalCliente += tx.totalVenta || 0;
+            continue;
+          }
+          for (const linea of tx.detalle) {
+            rows.push({
+              Cliente: cliente.nombre, NIT: cliente.nit || '—', Fecha: tx.fecha,
+              Producto: linea.nombre || linea.productoId, Cantidad: linea.cantidad,
+              'Precio unitario': linea.precioUnitario, Subtotal: linea.subtotal,
+            });
+            totalCliente += linea.subtotal;
+          }
+        }
+        rows.push({ Cliente: `TOTAL ${cliente.nombre}`, NIT: '', Fecha: '', Producto: '', Cantidad: '', 'Precio unitario': '', Subtotal: totalCliente });
+        granTotal += totalCliente;
+
+        // Sellar estas transacciones como ya facturadas — sin tocar transacciones (inmutable)
+        await addDoc(collection(db, 'facturasGeneradas'), {
+          empresaId, clienteId: cliente.id,
+          periodoDesde: facDesde, periodoHasta: facHasta,
+          fechaGeneracion: new Date().toISOString(),
+          transaccionIds: transaccionIdsIncluidas,
+          total: totalCliente,
+          generadoPor: auth.currentUser?.uid ?? null,
+        });
+      }
+
+      if (!rows.length) {
+        alert('No hay entregas pendientes de facturar para estos clientes en este período.');
+        return;
+      }
+      rows.push({ Cliente: 'GRAN TOTAL', NIT: '', Fecha: '', Producto: '', Cantidad: '', 'Precio unitario': '', Subtotal: granTotal });
+
+      downloadCSV(rows, `facturacion-${facDesde}-a-${facHasta}.csv`);
+      if (transaccionesSinDetalle > 0) {
+        alert(`Nota: ${transaccionesSinDetalle} venta(s) incluida(s) sin desglose por producto (registradas antes de esta función) — se muestran con el monto total, sin línea por producto.`);
+      }
+    } catch (err) {
+      alert('Error: ' + err.message);
+    } finally {
+      setFacGenerando(false);
+    }
   }
 
   // ---- Camiones & Conductores ----
@@ -493,6 +596,21 @@ export default function GestionPage() {
           <button className={styles.exportBtn} onClick={exportContabilidad}>
             🧾 Para contabilidad
           </button>
+        </div>
+
+        <div style={{ marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--cream-border)' }}>
+          <div className={styles.cardTitle} style={{ fontSize: 14, marginBottom: 8 }}>Facturación por período</div>
+          <p style={{ fontSize: 12.5, color: 'var(--text-muted)', marginBottom: 10 }}>
+            Clientes tipo "Facturación electrónica" cuyo día de facturación cae en el rango — entregas
+            no facturadas aún, con detalle por producto. Lo que hoy es el Registro de Facturas a mano.
+          </p>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+            <FormField label="Desde" type="date" value={facDesde} onChange={e => setFacDesde(e.target.value)} />
+            <FormField label="Hasta" type="date" value={facHasta} onChange={e => setFacHasta(e.target.value)} />
+            <Btn onClick={exportFacturacion} disabled={facGenerando}>
+              {facGenerando ? 'Generando...' : '⬇ Exportar facturación'}
+            </Btn>
+          </div>
         </div>
       </div>
 

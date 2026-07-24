@@ -86,9 +86,22 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // INTOCABLE: transacciones es create-only por diseño (registro contable
+    // inmutable). El control de "ya facturado" vive aparte, en
+    // facturasGeneradas (referencia por transaccionIds) — nunca se marca
+    // sobre el documento de transacción mismo. No cambiar esta regla.
     match /transacciones/{id} {
       allow read: if authed() && resource.data.empresaId == myEmpresaId();
       allow create: if authed() && request.resource.data.empresaId == myEmpresaId();
+      allow update, delete: if false;
+    }
+
+    // Registro de qué transacciones ya se incluyeron en una factura, para
+    // que el corte del mes siguiente no vuelva a arrastrarlas — sin marcar
+    // ni modificar transacciones (inmutable, ver arriba). Solo admin.
+    match /facturasGeneradas/{id} {
+      allow read: if isAdmin() && resource.data.empresaId == myEmpresaId();
+      allow create: if isAdmin() && request.resource.data.empresaId == myEmpresaId();
       allow update, delete: if false;
     }
 

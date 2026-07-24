@@ -7,13 +7,17 @@ import { useClientes, useProductos } from '../hooks/useCollection';
 import { money } from '../utils/format';
 import { downloadCSV } from '../utils/csv';
 import Modal from '../components/Modal';
-import FormField, { Btn } from '../components/FormField';
+import FormField, { Select, Btn } from '../components/FormField';
 import styles from './ClientesPage.module.css';
 
 const EMPTY = {
   nombre: '', direccion: '', municipio: '', wap1: '', wap2: '', notas: '',
   deuda: 0, fotoUrl: null, pedidoUsual: {}, preciosCliente: {},
   limiteDeuda: 0,
+  // tipo 'ruta' = cliente normal de reparto (default). 'facturacion' = cliente
+  // grande con facturación electrónica por período (ver export en Gestión).
+  // Clientes existentes sin este campo se tratan como 'ruta' en todo el código.
+  tipo: 'ruta', diaFacturacion: '', nit: '',
 };
 
 export default function ClientesPage() {
@@ -41,7 +45,9 @@ export default function ClientesPage() {
     productos.forEach(p => {
       if (preciosCliente[p.id] === undefined) preciosCliente[p.id] = 0;
     });
-    setForm({ ...c, preciosCliente });
+    // Clientes creados antes de este campo no tienen 'tipo' guardado — se
+    // asumen 'ruta' (comportamiento actual, nada cambia hasta que se reclasifiquen).
+    setForm({ ...c, preciosCliente, tipo: c.tipo || 'ruta', diaFacturacion: c.diaFacturacion ?? '', nit: c.nit || '' });
     setFotoFile(null);
     setFotoPreview(null);
     setModal(c);
@@ -75,7 +81,13 @@ export default function ClientesPage() {
       }
 
       // 2. Construir payload limpio
-      const payload = { ...form, fotoUrl, empresaId, deuda: Number(form.deuda) || 0 };
+      const payload = {
+        ...form, fotoUrl, empresaId, deuda: Number(form.deuda) || 0,
+        tipo: form.tipo || 'ruta',
+        diaFacturacion: form.tipo === 'facturacion' && form.diaFacturacion
+          ? Number(form.diaFacturacion) : null,
+        nit: form.nit?.trim() || null,
+      };
       delete payload.id;
 
       // 3. Escribir
@@ -192,6 +204,26 @@ export default function ClientesPage() {
         <FormField label="WhatsApp 1" value={form.wap1} onChange={e => setForm({ ...form, wap1: e.target.value })} />
         <FormField label="WhatsApp 2" value={form.wap2 || ''} onChange={e => setForm({ ...form, wap2: e.target.value })} />
         <FormField label="Notas" value={form.notas || ''} onChange={e => setForm({ ...form, notas: e.target.value })} />
+
+        <Select
+          label="Tipo de cliente"
+          value={form.tipo || 'ruta'}
+          onChange={v => setForm({ ...form, tipo: v, diaFacturacion: v === 'facturacion' ? form.diaFacturacion : '' })}
+          options={[
+            { value: 'ruta', label: 'Ruta (reparto normal)' },
+            { value: 'facturacion', label: 'Facturación electrónica por período' },
+          ]}
+        />
+        <FormField label="NIT (opcional)" value={form.nit || ''} onChange={e => setForm({ ...form, nit: e.target.value })} />
+        {form.tipo === 'facturacion' && (
+          <FormField
+            label="Día de facturación del mes (1-28)"
+            type="number" min="1" max="28"
+            value={form.diaFacturacion || ''}
+            onChange={e => setForm({ ...form, diaFacturacion: e.target.value })}
+          />
+        )}
+
         <FormField
           label="Límite de crédito ($)"
           type="number"
