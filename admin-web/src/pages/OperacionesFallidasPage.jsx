@@ -9,6 +9,7 @@ const ETIQUETAS_TIPO = {
   AGREGAR_PARADA: 'Parada agregada',
   MARCAR_CERRADO: 'Visita marcada como cerrada',
   OPTIMIZAR_RUTA: 'Optimización de ruta',
+  REGISTRAR_MOVIMIENTO_COMODATO: 'Movimiento de activo en préstamo',
 };
 
 function resumenPayload(tipo, payload, clientesMap) {
@@ -24,6 +25,11 @@ function resumenPayload(tipo, payload, clientesMap) {
     case 'AGREGAR_DEVOLUCION': {
       const d = payload.devolucion || {};
       return `${d.tipo || '—'} · producto ${d.productoId || '—'} · ${d.cantidad ?? 0} uni`;
+    }
+    case 'REGISTRAR_MOVIMIENTO_COMODATO': {
+      const origenId = payload.origen?.ubicacionId || '—';
+      const destinoId = payload.destino?.ubicacionId || '—';
+      return `Activo ${payload.tipoActivoId || '—'} · ${payload.cantidad ?? 0} uni · ${origenId} → ${destinoId}`;
     }
     default:
       return payload.rutaId ? `Ruta ${payload.rutaId}` : 'Sin más detalle';
